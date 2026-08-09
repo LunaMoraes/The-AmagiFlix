@@ -8,7 +8,7 @@ export interface CategoryRule {
 }
 
 export const CATEGORY_RULES: CategoryRule[] = [
-  { id: "naruto", label: "Naruto & Boruto", priority: 10, patterns: [/\bnaruto\b/i, /\bboruto\b/i, /\bsasuke\b/i, /\bitachi\b/i, /\bmadara\b/i, /\bkakashi\b/i, /\bakatsuki\b/i, /\bhokage\b/i] },
+  { id: "naruto", label: "Naruto & Boruto", priority: 10, patterns: [/\bnaruto\b/i, /\bboruto\b/i, /\bsasuke\b/i, /\bitachi\b/i, /\bmadara\b/i, /\bkakashi\b/i, /\bakatsuki\b/i, /\bhokage\b/i, /\bminato\b/i, /\bkaguya\b/i, /\bsakura\b/i, /\bjiraiya\b/i, /\bhinata\b/i, /\bkurama\b/i, /\bkushina\b/i, /\buchiha\b/i, /\bshisui\b/i, /\bdanzo\b/i, /\bteam\s*7\b/i, /\bjinchuriki\b/i, /\bobito\b/i, /\byahiko\b/i, /\bhyuga\b/i, /\bkonoha\b/i] },
   { id: "avatar", label: "Avatar", priority: 20, patterns: [/\bavatar(?:\s*:\s*the last airbender)?\b/i, /\baang\b/i, /\bzuko\b/i, /\bazula\b/i, /\bkorra\b/i] },
   { id: "one-piece", label: "One Piece", priority: 30, patterns: [/\bone piece\b/i, /\bluffy\b/i, /\broronoa zoro\b/i, /\bstraw hats?\b/i] },
   { id: "dragon-ball", label: "Dragon Ball", priority: 40, patterns: [/\bdragon ball\b/i, /\bgoku\b/i, /\bvegeta\b/i, /\bfrieza\b/i] },
