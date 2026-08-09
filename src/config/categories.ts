@@ -20,10 +20,9 @@ export const CATEGORY_RULES: CategoryRule[] = [
   { id: "bleach", label: "Bleach", priority: 100, patterns: [/\bbleach\b/i, /\bichigo\b/i, /\baizen\b/i] },
   { id: "invincible", label: "Invincible", priority: 110, patterns: [/\binvincible\b/i, /\bomni[ -]man\b/i, /\bmark grayson\b/i] },
   { id: "wizarding-world", label: "Wizarding World", priority: 120, patterns: [/\bharry potter\b/i, /\bhogwarts\b/i, /\bvoldemort\b/i, /\bdumbledore\b/i] },
-  { id: "marvel", label: "Marvel", priority: 130, patterns: [/\bmarvel\b/i, /\bavengers?\b/i, /\bspider[ -]?man\b/i, /\bx[ -]?men\b/i, /\bmcu\b/i] },
   { id: "dc", label: "DC", priority: 140, patterns: [/\bdc comics\b/i, /\bbatman\b/i, /\bsuperman\b/i, /\bjustice league\b/i, /\bthe joker\b/i] },
   { id: "star-wars", label: "Star Wars", priority: 150, patterns: [/\bstar wars\b/i, /\bdarth vader\b/i, /\bjedi\b/i, /\bsith\b/i] },
-  { id: OTHER_CATEGORY_ID, label: "Other Full Movies", priority: 1000, patterns: [] },
+  { id: OTHER_CATEGORY_ID, label: "Uncategorized Full Movies", priority: 1000, patterns: [] },
 ];
 
 export const getCategoryLabel = (id: string) => CATEGORY_RULES.find((rule) => rule.id === id)?.label ?? id;

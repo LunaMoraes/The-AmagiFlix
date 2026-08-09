@@ -111,7 +111,7 @@ function normalizeMovie(video: YouTubeVideo, channelId: string): CatalogMovie | 
       standard: thumbnails.standard?.url,
       maxres: thumbnails.maxres?.url,
     },
-    categories: classifyMovie({ title: snippet.title, description: snippet.description, tags: snippet.tags }),
+    categories: classifyMovie({ title: snippet.title }),
   };
 }
 
@@ -128,7 +128,7 @@ async function main(): Promise<void> {
 
   const unmatched = movies.filter((movie) => movie.categories.includes("other-full-movies"));
   if (unmatched.length) {
-    console.warn(`Other Full Movies (${unmatched.length}):`);
+    console.warn(`Uncategorized Full Movies (${unmatched.length}):`);
     for (const movie of unmatched) console.warn(`- ${movie.title}`);
   }
 

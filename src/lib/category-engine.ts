@@ -8,7 +8,7 @@ export function isFullMovieTitle(title: string): boolean {
 }
 
 export function classifyMovie(input: { title: string; description?: string; tags?: string[] }, rules: CategoryRule[] = CATEGORY_RULES): string[] {
-  const searchable = [input.title, input.description ?? "", ...(input.tags ?? [])].join(" ");
+  const searchable = input.title;
   const matches = rules
     .filter((rule) => rule.id !== OTHER_CATEGORY_ID && rule.patterns.some((pattern) => pattern.test(searchable)))
     .sort((a, b) => a.priority - b.priority)

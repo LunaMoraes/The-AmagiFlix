@@ -95,13 +95,13 @@
       "categories": ["wizarding-world"]
     },
     {
-      "videoId": "demo-marvel-dc",
-      "title": "Marvel and DC's Greatest Heroes Explained (Full Movie)",
-      "description": "A sweeping look at legendary heroes, rivalries, and turning points across two comic universes.",
+      "videoId": "demo-dc",
+      "title": "DC's Greatest Heroes Explained (Full Movie)",
+      "description": "A sweeping look at legendary heroes, rivalries, and turning points across the DC universe.",
       "publishedAt": "2026-02-08T14:00:00Z",
       "durationSeconds": 9220,
       "thumbnails": {},
-      "categories": ["marvel", "dc"]
+      "categories": ["dc"]
     },
     {
       "videoId": "demo-other",
