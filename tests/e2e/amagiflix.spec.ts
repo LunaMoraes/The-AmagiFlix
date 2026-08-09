@@ -12,6 +12,17 @@ test("browses the catalog and opens accessible movie details", async ({ page }) 
   await expect(page.getByRole("dialog")).toBeHidden();
 });
 
+test("hero starts with the brand and exposes the newest title with its artwork", async ({ page }) => {
+  await page.goto("/");
+  const hero = page.getByRole("region", { name: "Featured carousel" });
+  await expect(hero.getByRole("heading", { name: "The AmagiFlix" })).toBeVisible();
+  await expect(hero.getByRole("heading", { name: "What If Naruto Left Konoha" })).toHaveCount(0);
+  await hero.getByRole("button", { name: "Show newest title: What If Naruto Left Konoha" }).click();
+  await expect(hero.getByRole("heading", { name: "What If Naruto Left Konoha" })).toBeVisible();
+  await expect(hero.getByRole("link", { name: "Play Episode 1" })).toHaveAttribute("href", "https://www.youtube.com/watch?v=sNarutoE001");
+  await expect(hero.locator('[style*="e2e-feature"]')).toHaveCount(1);
+});
+
 test("search and My List work locally", async ({ page }) => {
   await page.goto("/#/search?q=Full%20Movie");
   await expect(page.getByText(/results? for “Full Movie”/i)).toBeVisible();

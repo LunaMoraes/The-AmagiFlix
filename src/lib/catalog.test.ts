@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateCatalog } from "./catalog";
-import { selectFeaturedMovie, youtubeWatchUrl } from "./movies";
+import { selectFeaturedTitle, youtubeWatchUrl } from "./movies";
 import type { CatalogMovie, CatalogShow } from "../types/catalog";
 
 const movie: CatalogMovie = { videoId: "abc 123", title: "Movie", description: "", publishedAt: "2026-01-01", durationSeconds: null, thumbnails: {}, categories: ["other-full-movies"] };
@@ -14,6 +14,10 @@ describe("catalog helpers", () => {
     expect(validateCatalog({ schemaVersion: 1, generatedAt: "now", sourceChannelId: "channel", movieCount: 1, movies: [movie] }).shows).toEqual([]);
     expect(() => validateCatalog({ schemaVersion: 1, generatedAt: "now", sourceChannelId: "channel", movieCount: 1, movies: [movie], showCount: 0, shows: [show] })).toThrow();
   });
-  it("selects the stable newest fallback", () => expect(selectFeaturedMovie([movie])).toBe(movie));
+  it("selects the newest movie or show without mutating the catalog order", () => {
+    const titles = [movie, show];
+    expect(selectFeaturedTitle(titles)).toBe(show);
+    expect(titles).toEqual([movie, show]);
+  });
   it("builds canonical encoded watch URLs", () => expect(youtubeWatchUrl(movie.videoId)).toBe("https://www.youtube.com/watch?v=abc%20123"));
 });

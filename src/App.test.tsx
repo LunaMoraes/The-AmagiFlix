@@ -24,7 +24,7 @@ const catalogWithShow = {
     title: "What If Naruto Left Konoha",
     description: "An alternate Naruto timeline.",
     latestPublishedAt: "2026-02-02T00:00:00Z",
-    thumbnails: {},
+    thumbnails: { maxres: "https://example.com/newest-show.jpg" },
     categories: ["naruto"],
     seasonNumber: 1,
     episodes: [
@@ -71,14 +71,14 @@ describe("App", () => {
     const user = userEvent.setup();
     renderApp();
     await user.click(await screen.findByRole("button", { name: /retry/i }));
-    await waitFor(() => expect(screen.getByRole("heading", { name: "Naruto Full Movie" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("heading", { name: "The AmagiFlix" })).toBeInTheDocument());
   });
 
   it("stores the profile name and exposes V2 history settings", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalog }));
     const user = userEvent.setup();
     renderApp();
-    await screen.findByRole("heading", { name: "Naruto Full Movie" });
+    await screen.findByRole("heading", { name: "The AmagiFlix" });
     await user.click(screen.getByRole("button", { name: "Open account menu" }));
     await user.click(screen.getByRole("button", { name: /Profile Guest/ }));
     const name = screen.getByRole("textbox", { name: "Display name" });
@@ -107,7 +107,7 @@ describe("App", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalog }));
     const user = userEvent.setup();
     renderApp();
-    await screen.findByRole("heading", { name: "Naruto Full Movie" });
+    await screen.findByRole("heading", { name: "The AmagiFlix" });
     await user.click(screen.getByRole("button", { name: "Open account menu" }));
     await user.click(screen.getByRole("button", { name: /Browser Extension/ }));
     expect(screen.getByRole("link", { name: /Download Extension ZIP/ })).toHaveAttribute("href", "/downloads/amagiflix-companion.zip");
@@ -137,5 +137,20 @@ describe("App", () => {
     unmount();
     renderApp("/search?q=Sasuke");
     expect((await screen.findAllByRole("button", { name: "More information about What If Naruto Left Konoha" }))).toHaveLength(1);
+  });
+
+  it("starts on the brand slide and features the newest catalog title with its artwork", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
+    const user = userEvent.setup();
+    renderApp();
+
+    const carousel = await screen.findByRole("region", { name: "Featured carousel" });
+    expect(within(carousel).getByRole("heading", { name: "The AmagiFlix" })).toBeInTheDocument();
+    expect(within(carousel).queryByRole("heading", { name: "What If Naruto Left Konoha" })).not.toBeInTheDocument();
+
+    await user.click(within(carousel).getByRole("button", { name: "Show newest title: What If Naruto Left Konoha" }));
+    expect(within(carousel).getByRole("heading", { name: "What If Naruto Left Konoha" })).toBeInTheDocument();
+    expect(within(carousel).getByRole("link", { name: "Play Episode 1" })).toHaveAttribute("href", "https://www.youtube.com/watch?v=epNaruto001");
+    expect(carousel.querySelector('[style*="newest-show.jpg"]')).not.toBeNull();
   });
 });

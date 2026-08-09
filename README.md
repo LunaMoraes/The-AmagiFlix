@@ -1,6 +1,6 @@
 # The AmagiFlix
 
-The AmagiFlix is a fan-made, Netflix-inspired discovery interface for The Amagi's feature-length movies and episodic `What If` stories on YouTube. It is a static React application: playback always happens on the canonical YouTube watch page.
+The AmagiFlix is a fan-made, Netflix-inspired discovery interface for The Amagi's feature-length movies and episodic `What If` stories on YouTube. It is a static React application: playback always happens on the canonical YouTube watch page. The home hero alternates every eight seconds between the standalone AmagiFlix wordmark and the newest movie or show in the catalog.
 
 V2 adds two local-only watch-state tools:
 
@@ -39,7 +39,7 @@ npm run test:e2e
 4. Set **API restrictions** to **Restrict key**, selecting only **YouTube Data API v3**. The build runs on GitHub-hosted runners, so a browser referrer restriction is not appropriate for this server-side credential.
 5. For a local one-time generation, set `YOUTUBE_API_KEY` in the shell and run `npm run catalog`. Never name it `VITE_YOUTUBE_API_KEY` and never commit it.
 
-The generator resolves `@TheAmagiYT`, walks the uploads playlist, and fetches videos in batches. Existing `Full Movie` handling remains unchanged. Separate non-movie titles beginning with `What If` are grouped into Season 1 shows by their trailing Part/Episode/Final markers. A title without an episode marker becomes a one-episode show and absorbs later continuations. When a matching Full Movie exists, that show is suppressed while every Full Movie remains visible. The generator reports created, suppressed, ambiguous, irregular, and uncategorized shows before atomically writing `public/data/catalog.json`. API or transformation failures stop the build rather than deploying a partial catalog.
+The generator resolves `@TheAmagiYT`, walks the uploads playlist, and fetches videos in batches. Existing `Full Movie` handling remains unchanged. Catalog descriptions retain only the editorial copy between The Amagi's subscription link and the first `***` footer marker; descriptions missing either boundary are preserved. Separate non-movie titles beginning with `What If` are grouped into Season 1 shows by their trailing Part/Episode/Final markers. A title without an episode marker becomes a one-episode show and absorbs later continuations. When a matching Full Movie exists, that show is suppressed while every Full Movie remains visible. The generator reports created, suppressed, ambiguous, irregular, and uncategorized shows before atomically writing `public/data/catalog.json`. API or transformation failures stop the build rather than deploying a partial catalog.
 
 Rare spelling differences can be handled explicitly in `src/config/show-aliases.ts`. Broad fuzzy matches are reported for review but never suppress a show automatically. Franchise classification uses only show and episode titles; generic titles that cannot be matched safely use normalized identities in `src/config/show-category-overrides.ts`.
 

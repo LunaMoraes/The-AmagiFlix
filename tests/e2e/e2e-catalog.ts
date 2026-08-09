@@ -23,7 +23,7 @@ export const e2eCatalog = {
       title: "What If Naruto Left Konoha",
       description: "Naruto leaves the village and faces an unfamiliar future.",
       latestPublishedAt: "2026-08-03T14:00:00.000Z",
-      thumbnails: {},
+      thumbnails: { maxres: "data:image/svg+xml,%3Csvg%20id='e2e-feature'%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%209'%3E%3Crect%20width='16'%20height='9'%20fill='%234a090d'/%3E%3C/svg%3E" },
       categories: ["naruto"],
       seasonNumber: 1,
       episodes: [

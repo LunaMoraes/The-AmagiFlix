@@ -1,8 +1,9 @@
 import { CATEGORY_RULES } from "../config/categories";
-import { FEATURED_VIDEO_ID } from "../config/app";
-import type { CatalogMovie } from "../types/catalog";
+import type { CatalogMovie, CatalogTitle } from "../types/catalog";
+import { titlePublishedAt } from "./titles";
 
-export const selectFeaturedMovie = (movies: CatalogMovie[]): CatalogMovie | undefined => movies.find((movie) => movie.videoId === FEATURED_VIDEO_ID) ?? movies[0];
+export const selectFeaturedTitle = (titles: CatalogTitle[]): CatalogTitle | undefined => [...titles]
+  .sort((left, right) => Date.parse(titlePublishedAt(right)) - Date.parse(titlePublishedAt(left)))[0];
 
 export const getThumbnail = (movie: CatalogMovie): string | undefined => movie.thumbnails.maxres ?? movie.thumbnails.standard ?? movie.thumbnails.high ?? movie.thumbnails.medium ?? movie.thumbnails.default;
 

@@ -4,6 +4,7 @@ import { AMAGI_CHANNEL_HANDLE } from "../src/config/app";
 import { classifyMovie, isFullMovieTitle } from "../src/lib/category-engine";
 import { SHOW_IDENTITY_ALIASES } from "../src/config/show-aliases";
 import { parseIsoDuration } from "../src/lib/duration";
+import { normalizeCatalogDescription } from "../src/lib/description";
 import { aggregateShows, isShowCandidateTitle, type ShowVideoCandidate } from "../src/lib/show-catalog";
 import type { CatalogFile, CatalogMovie } from "../src/types/catalog";
 
@@ -103,7 +104,7 @@ function normalizeMovie(video: YouTubeVideo, channelId: string): CatalogMovie | 
   return {
     videoId: video.id,
     title: snippet.title.replace(/\s+/g, " ").trim(),
-    description: (snippet.description ?? "").replace(/\s+/g, " ").trim(),
+    description: normalizeCatalogDescription(snippet.description ?? ""),
     publishedAt: snippet.publishedAt,
     durationSeconds: parseIsoDuration(contentDetails?.duration),
     thumbnails: {
@@ -124,7 +125,7 @@ function normalizeShowCandidate(video: YouTubeVideo, channelId: string): ShowVid
   return {
     videoId: video.id,
     title: snippet.title.replace(/\s+/g, " ").trim(),
-    description: (snippet.description ?? "").replace(/\s+/g, " ").trim(),
+    description: normalizeCatalogDescription(snippet.description ?? ""),
     publishedAt: snippet.publishedAt,
     durationSeconds: parseIsoDuration(contentDetails?.duration),
     thumbnails: {

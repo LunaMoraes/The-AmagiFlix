@@ -1,6 +1,5 @@
 export const APP_NAME = "The AmagiFlix";
 export const AMAGI_CHANNEL_HANDLE = "@TheAmagiYT";
-export const FEATURED_VIDEO_ID: string | undefined = undefined;
 export const V1_STORAGE_KEY = "amagiflix:library:v1";
 export const STORAGE_KEY = "amagiflix:library:v2";
 export const HISTORY_IMPORT_KEY = "amagiflix.v2.historyImportCompleted";
