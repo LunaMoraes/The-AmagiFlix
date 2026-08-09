@@ -29,17 +29,18 @@ export function ExtensionBridgeProvider({ children }: PropsWithChildren) {
   useEffect(() => subscribeBridgeEvents(setStates), []);
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
     setStatus("checking");
-    sendBridgeRequest({ type: "AMAGIFLIX_PING" })
+    sendBridgeRequest({ type: "AMAGIFLIX_PING" }, 900, controller.signal)
       .then(async (response) => {
         if (!active || response.type !== "AMAGIFLIX_PONG") return;
         setExtensionVersion(response.extensionVersion);
         setStatus("connected");
-        const stateResponse = await sendBridgeRequest({ type: "AMAGIFLIX_GET_STATES" }, 2_000);
+        const stateResponse = await sendBridgeRequest({ type: "AMAGIFLIX_GET_STATES" }, 2_000, controller.signal);
         if (active && stateResponse.type === "AMAGIFLIX_STATES") setStates(stateResponse.states);
       })
       .catch(() => { if (active) setStatus("missing"); });
-    return () => { active = false; };
+    return () => { active = false; controller.abort(); };
   }, [attempt]);
 
   const ack = useCallback(async (input: Parameters<typeof sendBridgeRequest>[0]) => {

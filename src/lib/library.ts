@@ -1,7 +1,8 @@
-import type { CatalogMovie } from "../types/catalog";
-import type { ExtensionVideoState, ImportedWatchState, LocalLibrary, ResolvedVideoState, WebVideoState } from "../types/library";
+import type { CatalogMovie, CatalogShow, CatalogTitle } from "../types/catalog";
+import type { ExtensionVideoState, ImportedWatchState, LocalLibrary, ResolvedShowState, ResolvedTitleState, ResolvedVideoState, WebVideoState } from "../types/library";
+import { isShow } from "./titles";
 
-export const EMPTY_LIBRARY: LocalLibrary = { schemaVersion: 2, videos: {} };
+export const EMPTY_LIBRARY: LocalLibrary = { schemaVersion: 2, videos: {}, shows: {} };
 
 const emptyVideo = (): WebVideoState => ({ inMyList: false });
 
@@ -36,6 +37,7 @@ function updateVideo(library: LocalLibrary, videoId: string, update: (state: Web
   return {
     schemaVersion: 2,
     videos: { ...library.videos, [videoId]: update(library.videos[videoId] ?? emptyVideo()) },
+    shows: library.shows,
   };
 }
 
@@ -54,6 +56,13 @@ export function toggleWatched(library: LocalLibrary, videoId: string, now = new 
 
 export function toggleMyList(library: LocalLibrary, videoId: string): LocalLibrary {
   return updateVideo(library, videoId, (state) => ({ ...state, inMyList: !state.inMyList }));
+}
+
+export function toggleShowMyList(library: LocalLibrary, showId: string): LocalLibrary {
+  return {
+    ...library,
+    shows: { ...library.shows, [showId]: { inMyList: !library.shows[showId]?.inMyList } },
+  };
 }
 
 export function mergeImportedHistory(library: LocalLibrary, records: ImportedWatchState[]): LocalLibrary {
@@ -107,4 +116,64 @@ export function selectWatchAgain(movies: CatalogMovie[], library: LocalLibrary):
   return movies
     .filter((movie) => getVideoState(library, movie.videoId).watched)
     .sort((a, b) => timestamp(getVideoState(library, b.videoId).watchedAt) - timestamp(getVideoState(library, a.videoId).watchedAt));
+}
+
+export function getShowState(library: LocalLibrary, show: CatalogShow): ResolvedShowState {
+  const episodeStates = show.episodes.map((episode) => ({ episode, state: getVideoState(library, episode.videoId) }));
+  const started = episodeStates.some(({ state }) => state.started);
+  const watched = episodeStates.length > 0 && episodeStates.every(({ state }) => state.watched);
+  const startedIncomplete = episodeStates.find(({ state }) => state.started && !state.watched);
+  const earliestUnwatched = episodeStates.find(({ state }) => !state.watched);
+  const resume = startedIncomplete ?? earliestUnwatched ?? episodeStates[0];
+  const watchedAt = watched
+    ? episodeStates.map(({ state }) => state.watchedAt).filter((value): value is string => Boolean(value)).sort((a, b) => timestamp(b) - timestamp(a))[0]
+    : undefined;
+  const sources = new Set(episodeStates.flatMap(({ state }) => state.sources));
+  return {
+    inMyList: library.shows[show.showId]?.inMyList === true,
+    started,
+    watched,
+    ...(watchedAt ? { watchedAt } : {}),
+    ...(resume?.state.progress ? { progress: resume.state.progress } : {}),
+    sources: [...sources],
+    resumeVideoId: resume?.episode.videoId ?? show.episodes[0]?.videoId ?? "",
+  };
+}
+
+export function getTitleState(library: LocalLibrary, title: CatalogTitle): ResolvedTitleState {
+  return isShow(title) ? getShowState(library, title) : getVideoState(library, title.videoId);
+}
+
+function showActivity(library: LocalLibrary, show: CatalogShow): number {
+  return Math.max(0, ...show.episodes.map(({ videoId }) => {
+    const state = library.videos[videoId];
+    return timestamp(resolveVideoState(state).progress?.measuredAt ?? state?.extension?.lastObservedAt ?? state?.lastOpenedAt ?? state?.startedAt);
+  }));
+}
+
+export function selectContinueWatchingTitles(movies: CatalogMovie[], shows: CatalogShow[], library: LocalLibrary): CatalogTitle[] {
+  const moviesWithActivity = movies
+    .filter((movie) => { const state = getVideoState(library, movie.videoId); return state.started && !state.watched; })
+    .map((title) => ({ title, activity: timestamp(getVideoState(library, title.videoId).progress?.measuredAt ?? library.videos[title.videoId]?.extension?.lastObservedAt ?? library.videos[title.videoId]?.lastOpenedAt ?? library.videos[title.videoId]?.startedAt) }));
+  const showsWithActivity = shows
+    .filter((show) => { const state = getShowState(library, show); return state.started && !state.watched; })
+    .map((title) => ({ title, activity: showActivity(library, title) }));
+  return [...moviesWithActivity, ...showsWithActivity].sort((a, b) => b.activity - a.activity).map(({ title }) => title);
+}
+
+export function selectWatchAgainTitles(movies: CatalogMovie[], shows: CatalogShow[], library: LocalLibrary): CatalogTitle[] {
+  return [...movies, ...shows]
+    .filter((title) => getTitleState(library, title).watched)
+    .sort((a, b) => timestamp(getTitleState(library, b).watchedAt) - timestamp(getTitleState(library, a).watchedAt));
+}
+
+export function selectMyListTitles(movies: CatalogMovie[], shows: CatalogShow[], library: LocalLibrary): CatalogTitle[] {
+  return [...movies.filter((movie) => getVideoState(library, movie.videoId).inMyList), ...shows.filter((show) => getShowState(library, show).inMyList)];
+}
+
+export function selectRecommendedTitles(randomizedTitles: CatalogTitle[], library: LocalLibrary, limit = 20): CatalogTitle[] {
+  return randomizedTitles.filter((title) => {
+    const state = getTitleState(library, title);
+    return !state.started && !state.watched;
+  }).slice(0, limit);
 }

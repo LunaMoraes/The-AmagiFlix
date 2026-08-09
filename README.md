@@ -1,10 +1,10 @@
 # The AmagiFlix
 
-The AmagiFlix is a fan-made, Netflix-inspired discovery interface for The Amagi's feature-length YouTube videos. It is a static React application: playback always happens on the canonical YouTube watch page.
+The AmagiFlix is a fan-made, Netflix-inspired discovery interface for The Amagi's feature-length movies and episodic `What If` stories on YouTube. It is a static React application: playback always happens on the canonical YouTube watch page.
 
 V2 adds two local-only watch-state tools:
 
-- A manual Google/YouTube activity import for movies watched before V2.
+- A manual Google/YouTube activity import for movies and episodes watched before V2.
 - An optional Chrome Manifest V3 companion that measures future playback on normal YouTube pages.
 
 There is no AmagiFlix account, backend, OAuth flow, embedded player, or analytics service.
@@ -39,7 +39,9 @@ npm run test:e2e
 4. Set **API restrictions** to **Restrict key**, selecting only **YouTube Data API v3**. The build runs on GitHub-hosted runners, so a browser referrer restriction is not appropriate for this server-side credential.
 5. For a local one-time generation, set `YOUTUBE_API_KEY` in the shell and run `npm run catalog`. Never name it `VITE_YOUTUBE_API_KEY` and never commit it.
 
-The generator resolves `@TheAmagiYT`, walks the uploads playlist, fetches videos in batches, filters titles containing `Full Movie`, applies configured category rules, reports uncategorized titles, and atomically writes `public/data/catalog.json`. API or transformation failures stop the build rather than deploying a partial catalog.
+The generator resolves `@TheAmagiYT`, walks the uploads playlist, and fetches videos in batches. Existing `Full Movie` handling remains unchanged. Separate non-movie titles beginning with `What If` are grouped into Season 1 shows by their trailing Part/Episode/Final markers. A title without an episode marker becomes a one-episode show and absorbs later continuations. When a matching Full Movie exists, that show is suppressed while every Full Movie remains visible. The generator reports created, suppressed, ambiguous, irregular, and uncategorized shows before atomically writing `public/data/catalog.json`. API or transformation failures stop the build rather than deploying a partial catalog.
+
+Rare spelling differences can be handled explicitly in `src/config/show-aliases.ts`. Broad fuzzy matches are reported for review but never suppress a show automatically.
 
 ## GitHub Pages deployment
 
@@ -57,7 +59,7 @@ Export Google/YouTube activity through [Google Takeout](https://takeout.google.c
 - Parsing happens entirely in the current browser.
 - English `Watched` and Portuguese `Assistiu` activity are recognized.
 - Non-Amagi activity is discarded immediately and is never stored or uploaded.
-- Matching records become Watched, but never receive a fabricated progress percentage.
+- Matching movie or episode records become Watched, but never receive a fabricated progress percentage. A show becomes watched only when all of its visible episodes are watched.
 - Re-import and Clear Imported History remain available under **Account → Settings**.
 - Clearing imported markers preserves manual watched decisions, companion progress, and My List.
 
@@ -79,7 +81,7 @@ Chrome does not allow ordinary users on Windows or macOS to directly install a s
 The companion:
 
 - Uses only `storage` and `webNavigation` plus host access to YouTube and the AmagiFlix Pages host.
-- Checks the current YouTube video ID against the public AmagiFlix catalog.
+- Checks the current YouTube video ID against visible movies and show episodes in the public AmagiFlix catalog.
 - Stores playback only after 30 seconds of real, non-ad playback.
 - Checkpoints every 15 seconds and marks completion at 90% or the native ended event.
 - Ignores and does not store IDs, titles, channels, or playback for unrelated YouTube videos.
@@ -90,6 +92,7 @@ The extension cannot observe watches in mobile apps, TVs, consoles, Chromecast s
 ## State, privacy, and security
 
 - V2 web state uses `amagiflix:library:v2`. Existing `amagiflix:library:v1` data is migrated idempotently and left untouched after V2 persistence succeeds.
+- Episode state remains keyed by YouTube video ID; show watch state is derived from its episodes, while show-level My List state is stored under the same V2 library key.
 - Import completion metadata uses `amagiflix.v2.historyImportCompleted`.
 - The YouTube Data API key exists only during trusted catalog generation and build leakage checks.
 - The browser and extension receive only normalized catalog data; neither contains OAuth data, tags, raw API responses, or the secret API key.

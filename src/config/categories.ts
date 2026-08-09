@@ -1,4 +1,4 @@
-import { OTHER_CATEGORY_ID } from "./app";
+import { OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID } from "./app";
 
 export interface CategoryRule {
   id: string;
@@ -23,6 +23,7 @@ export const CATEGORY_RULES: CategoryRule[] = [
   { id: "dc", label: "DC", priority: 140, patterns: [/\bdc comics\b/i, /\bbatman\b/i, /\bsuperman\b/i, /\bjustice league\b/i, /\bthe joker\b/i] },
   { id: "star-wars", label: "Star Wars", priority: 150, patterns: [/\bstar wars\b/i, /\bdarth vader\b/i, /\bjedi\b/i, /\bsith\b/i] },
   { id: OTHER_CATEGORY_ID, label: "Uncategorized Full Movies", priority: 1000, patterns: [] },
+  { id: OTHER_SHOWS_CATEGORY_ID, label: "Uncategorized Shows", priority: 1010, patterns: [] },
 ];
 
 export const getCategoryLabel = (id: string) => CATEGORY_RULES.find((rule) => rule.id === id)?.label ?? id;

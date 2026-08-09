@@ -8,6 +8,10 @@ describe("library persistence", () => {
     expect(migrateLocalLibrary({ schemaVersion: 1, videos: {} })).toEqual(EMPTY_LIBRARY);
   });
   it("normalizes individual video states", () => expect(migrateLocalLibrary({ schemaVersion: 2, videos: { a: { inMyList: true, progress: 72 } } }).videos.a).toEqual({ inMyList: true }));
+  it("preserves show-level My List and defaults older V2 libraries to no shows", () => {
+    expect(migrateLocalLibrary({ schemaVersion: 2, videos: {}, shows: { "show-a": { inMyList: true }, invalid: { inMyList: false, extra: "ignored" } } }).shows).toEqual({ "show-a": { inMyList: true }, invalid: { inMyList: false } });
+    expect(migrateLocalLibrary({ schemaVersion: 2, videos: {} }).shows).toEqual({});
+  });
   it("migrates V1 watched, opened, and My List state", () => expect(migrateV1Library({ schemaVersion: 1, videos: { a: { watched: true, watchedAt: "2026-01-01T00:00:00Z", startedAt: "2025-01-01T00:00:00Z", inMyList: true } } }).videos.a).toMatchObject({ inMyList: true, startedAt: "2025-01-01T00:00:00Z", manualDecision: { watched: true, changedAt: "2026-01-01T00:00:00Z" } }));
   it("falls back when reads or writes fail", () => {
     const broken = { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } };

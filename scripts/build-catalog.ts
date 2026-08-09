@@ -2,7 +2,9 @@ import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { AMAGI_CHANNEL_HANDLE } from "../src/config/app";
 import { classifyMovie, isFullMovieTitle } from "../src/lib/category-engine";
+import { SHOW_IDENTITY_ALIASES } from "../src/config/show-aliases";
 import { parseIsoDuration } from "../src/lib/duration";
+import { aggregateShows, isShowCandidateTitle, type ShowVideoCandidate } from "../src/lib/show-catalog";
 import type { CatalogFile, CatalogMovie } from "../src/types/catalog";
 
 const API_ROOT = "https://youtube.googleapis.com/youtube/v3";
@@ -115,6 +117,26 @@ function normalizeMovie(video: YouTubeVideo, channelId: string): CatalogMovie | 
   };
 }
 
+function normalizeShowCandidate(video: YouTubeVideo, channelId: string): ShowVideoCandidate | null {
+  const { snippet, contentDetails } = video;
+  if (!video.id || !snippet?.title || !snippet.publishedAt || snippet.channelId !== channelId || !isShowCandidateTitle(snippet.title)) return null;
+  const thumbnails = snippet.thumbnails ?? {};
+  return {
+    videoId: video.id,
+    title: snippet.title.replace(/\s+/g, " ").trim(),
+    description: (snippet.description ?? "").replace(/\s+/g, " ").trim(),
+    publishedAt: snippet.publishedAt,
+    durationSeconds: parseIsoDuration(contentDetails?.duration),
+    thumbnails: {
+      default: thumbnails.default?.url,
+      medium: thumbnails.medium?.url,
+      high: thumbnails.high?.url,
+      standard: thumbnails.standard?.url,
+      maxres: thumbnails.maxres?.url,
+    },
+  };
+}
+
 async function main(): Promise<void> {
   const { channelId, uploadsPlaylistId } = await resolveChannel();
   const uploadIds = await getUploadIds(uploadsPlaylistId);
@@ -123,6 +145,10 @@ async function main(): Promise<void> {
     .map((video) => normalizeMovie(video, channelId))
     .filter((movie): movie is CatalogMovie => movie !== null)
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  const showCandidates = rawVideos
+    .map((video) => normalizeShowCandidate(video, channelId))
+    .filter((candidate): candidate is ShowVideoCandidate => candidate !== null);
+  const showCatalog = aggregateShows(showCandidates, movies, SHOW_IDENTITY_ALIASES);
 
   if (!movies.length) throw new Error("No eligible Full Movie videos were found; refusing to publish an empty catalog.");
 
@@ -132,20 +158,34 @@ async function main(): Promise<void> {
     for (const movie of unmatched) console.warn(`- ${movie.title}`);
   }
 
+  for (const show of showCatalog.shows) console.log(`Show: ${show.title} (${show.episodes.length} episode${show.episodes.length === 1 ? "" : "s"})`);
+  for (const item of showCatalog.suppressed) console.log(`Suppressed show: ${item.title} -> Full Movie ${item.movieVideoIds.join(", ")}`);
+  for (const item of showCatalog.ambiguous) console.warn(`Ambiguous show/movie match left visible: ${item.title} <> ${item.movieTitle} (${item.movieVideoId})`);
+  for (const warning of showCatalog.warnings) console.warn(`Show warning: ${warning}`);
+  const uncategorizedShows = showCatalog.shows.filter((show) => show.categories.includes("other-shows"));
+  if (uncategorizedShows.length) {
+    console.warn(`Uncategorized Shows (${uncategorizedShows.length}):`);
+    for (const show of uncategorizedShows) console.warn(`- ${show.title}`);
+  }
+
   const catalog: CatalogFile = {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     sourceChannelId: channelId,
     movieCount: movies.length,
     movies,
+    showCount: showCatalog.shows.length,
+    shows: showCatalog.shows,
   };
+
+  if (catalog.movieCount !== catalog.movies.length || catalog.showCount !== catalog.shows.length || catalog.shows.some((show) => !show.showId || !show.episodes.length)) throw new Error("Generated catalog failed validation.");
 
   const destination = resolve("public/data/catalog.json");
   const temporary = `${destination}.${process.pid}.tmp`;
   await mkdir(dirname(destination), { recursive: true });
   await writeFile(temporary, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
   await rename(temporary, destination);
-  console.log(`Generated ${movies.length} movies from channel ${channelId}.`);
+  console.log(`Generated ${movies.length} movies and ${showCatalog.shows.length} shows from channel ${channelId}.`);
 }
 
 await main();

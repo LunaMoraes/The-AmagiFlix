@@ -95,3 +95,30 @@ test("measured extension progress renders a real progress bar", async ({ page })
   await page.reload();
   await expect(page.getByLabel("42% watched").first()).toBeVisible();
 });
+
+test("shows appear once with a Season 1 episode list and canonical playback", async ({ page }) => {
+  await page.goto("/");
+  const show = page.getByRole("button", { name: "More information about What If Naruto Left Konoha" }).first();
+  await expect(show.getByText("Series")).toBeVisible();
+  await show.click();
+  const dialog = page.getByRole("dialog", { name: "What If Naruto Left Konoha" });
+  await expect(dialog.getByRole("heading", { name: "Season 1" })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: "Watch Episode 1 on YouTube" })).toHaveAttribute("href", "https://www.youtube.com/watch?v=sNarutoE001");
+  await dialog.getByRole("button", { name: "Add show to My List" }).click();
+  const showState = await page.evaluate(() => JSON.parse(localStorage.getItem("amagiflix:library:v2")!).shows["show-what-if-naruto-left-konoha-demo0001"]);
+  expect(showState.inMyList).toBe(true);
+});
+
+test("Movies & Shows and Recommended expose mixed titles in the agreed order", async ({ page }) => {
+  await page.goto("/");
+  const recommended = page.getByRole("region", { name: "Recommended" });
+  const recentlyAdded = page.getByRole("region", { name: "Recently Added Full Movies" });
+  await expect(recommended).toBeVisible();
+  const [recommendedBox, recentlyAddedBox] = await Promise.all([recommended.boundingBox(), recentlyAdded.boundingBox()]);
+  expect(recommendedBox!.y).toBeLessThan(recentlyAddedBox!.y);
+  await page.goto("/#/movies");
+  await expect(page.getByRole("heading", { name: "Movies & Shows" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeVisible();
+  await page.goto("/#/search?q=conclusion");
+  await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toHaveCount(1);
+});

@@ -1,5 +1,5 @@
 import { CATEGORY_RULES, type CategoryRule } from "../config/categories";
-import { OTHER_CATEGORY_ID } from "../config/app";
+import { OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID } from "../config/app";
 
 export const FULL_MOVIE_REGEX = /\bfull\s+movie\b/i;
 
@@ -14,4 +14,13 @@ export function classifyMovie(input: { title: string; description?: string; tags
     .sort((a, b) => a.priority - b.priority)
     .map((rule) => rule.id);
   return matches.length ? matches : [OTHER_CATEGORY_ID];
+}
+
+export function classifyShow(input: { title: string; description?: string; tags?: string[] }, rules: CategoryRule[] = CATEGORY_RULES): string[] {
+  const searchable = [input.title, input.description, ...(input.tags ?? [])].filter(Boolean).join(" ");
+  const matches = rules
+    .filter((rule) => rule.id !== OTHER_CATEGORY_ID && rule.id !== OTHER_SHOWS_CATEGORY_ID && rule.patterns.some((pattern) => pattern.test(searchable)))
+    .sort((a, b) => a.priority - b.priority)
+    .map((rule) => rule.id);
+  return matches.length ? matches : [OTHER_SHOWS_CATEGORY_ID];
 }

@@ -67,19 +67,21 @@ function normalizeState(value: unknown): WebVideoState {
 }
 
 export function migrateLocalLibrary(raw: unknown): LocalLibrary {
-  if (!raw || typeof raw !== "object") return { ...EMPTY_LIBRARY, videos: {} };
+  if (!raw || typeof raw !== "object") return { ...EMPTY_LIBRARY, videos: {}, shows: {} };
   const candidate = raw as Record<string, unknown>;
-  if (candidate.schemaVersion !== 2 || !candidate.videos || typeof candidate.videos !== "object" || Array.isArray(candidate.videos)) return { ...EMPTY_LIBRARY, videos: {} };
+  if (candidate.schemaVersion !== 2 || !candidate.videos || typeof candidate.videos !== "object" || Array.isArray(candidate.videos)) return { ...EMPTY_LIBRARY, videos: {}, shows: {} };
+  const shows = candidate.shows && typeof candidate.shows === "object" && !Array.isArray(candidate.shows) ? candidate.shows as Record<string, unknown> : {};
   return {
     schemaVersion: 2,
     videos: Object.fromEntries(Object.entries(candidate.videos as Record<string, unknown>).map(([id, state]) => [id, normalizeState(state)])),
+    shows: Object.fromEntries(Object.entries(shows).map(([id, value]) => [id, { inMyList: Boolean(value && typeof value === "object" && (value as Record<string, unknown>).inMyList === true) }])),
   };
 }
 
 export function migrateV1Library(raw: unknown, migratedAt = new Date().toISOString()): LocalLibrary {
-  if (!raw || typeof raw !== "object") return { ...EMPTY_LIBRARY, videos: {} };
+  if (!raw || typeof raw !== "object") return { ...EMPTY_LIBRARY, videos: {}, shows: {} };
   const candidate = raw as Record<string, unknown>;
-  if (candidate.schemaVersion !== 1 || !candidate.videos || typeof candidate.videos !== "object" || Array.isArray(candidate.videos)) return { ...EMPTY_LIBRARY, videos: {} };
+  if (candidate.schemaVersion !== 1 || !candidate.videos || typeof candidate.videos !== "object" || Array.isArray(candidate.videos)) return { ...EMPTY_LIBRARY, videos: {}, shows: {} };
   return {
     schemaVersion: 2,
     videos: Object.fromEntries(Object.entries(candidate.videos as Record<string, unknown>).map(([id, value]) => {
@@ -92,6 +94,7 @@ export function migrateV1Library(raw: unknown, migratedAt = new Date().toISOStri
         ...(state.watched === true ? { manualDecision: { watched: true, changedAt: watchedAt } } : {}),
       } satisfies WebVideoState];
     })),
+    shows: {},
   };
 }
 
@@ -109,9 +112,9 @@ export function loadLocalLibrary(storage?: Pick<Storage, "getItem">): LocalLibra
     const value = target?.getItem(STORAGE_KEY);
     if (value) return migrateLocalLibrary(JSON.parse(value));
     const v1 = target?.getItem(V1_STORAGE_KEY);
-    return v1 ? migrateV1Library(JSON.parse(v1)) : { ...EMPTY_LIBRARY, videos: {} };
+    return v1 ? migrateV1Library(JSON.parse(v1)) : { ...EMPTY_LIBRARY, videos: {}, shows: {} };
   } catch {
-    return { ...EMPTY_LIBRARY, videos: {} };
+    return { ...EMPTY_LIBRARY, videos: {}, shows: {} };
   }
 }
 

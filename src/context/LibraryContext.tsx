@@ -1,6 +1,6 @@
 import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from "react";
 import { useExtensionBridge } from "./ExtensionBridgeContext";
-import { clearImportedHistory, getVideoState, markOpened, mergeExtensionStates, mergeImportedHistory, resetProgress, toggleMyList, toggleWatched } from "../lib/library";
+import { clearImportedHistory, getVideoState, markOpened, mergeExtensionStates, mergeImportedHistory, resetProgress, toggleMyList, toggleShowMyList, toggleWatched } from "../lib/library";
 import { loadLocalLibrary, saveLocalLibrary } from "../lib/storage";
 import type { ExtensionVideoState, ImportedWatchState, LocalLibrary, ResolvedVideoState } from "../types/library";
 
@@ -11,6 +11,7 @@ interface LibraryContextValue {
   recordOpen(videoId: string): LocalLibrary;
   toggleWatched(videoId: string): LocalLibrary;
   toggleMyList(videoId: string): LocalLibrary;
+  toggleShowMyList(showId: string): LocalLibrary;
   mergeImport(records: ImportedWatchState[]): LocalLibrary;
   mergeExtension(states: ExtensionVideoState[]): LocalLibrary;
   clearImport(): LocalLibrary;
@@ -62,6 +63,7 @@ export function LibraryProvider({ children }: PropsWithChildren) {
       return next;
     },
     toggleMyList: (videoId) => apply((state) => toggleMyList(state, videoId)),
+    toggleShowMyList: (showId) => apply((state) => toggleShowMyList(state, showId)),
     mergeImport: (records) => {
       const next = apply((state) => mergeImportedHistory(state, records));
       void bridge.importHistory(records).catch(() => undefined);

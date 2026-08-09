@@ -1,11 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_LIBRARY, getVideoState, markOpened, mergeExtensionStates, mergeImportedHistory, resetProgress, selectContinueWatching, selectWatchAgain, toggleMyList, toggleWatched } from "./library";
-import type { CatalogMovie } from "../types/catalog";
+import { EMPTY_LIBRARY, getShowState, getVideoState, markOpened, mergeExtensionStates, mergeImportedHistory, resetProgress, selectContinueWatching, selectContinueWatchingTitles, selectRecommendedTitles, selectWatchAgain, selectWatchAgainTitles, toggleMyList, toggleShowMyList, toggleWatched } from "./library";
+import type { CatalogMovie, CatalogShow } from "../types/catalog";
 
 const movies: CatalogMovie[] = [
   { videoId: "a", title: "A", description: "", publishedAt: "2026-01-01", durationSeconds: null, thumbnails: {}, categories: ["other-full-movies"] },
   { videoId: "b", title: "B", description: "", publishedAt: "2026-01-02", durationSeconds: null, thumbnails: {}, categories: ["other-full-movies"] },
 ];
+const show: CatalogShow = {
+  showId: "show-a",
+  title: "What If A",
+  description: "",
+  latestPublishedAt: "2026-01-04",
+  thumbnails: {},
+  categories: ["naruto"],
+  seasonNumber: 1,
+  episodes: [
+    { videoId: "e1", title: "Part 1", description: "", publishedAt: "2026-01-03", durationSeconds: 100, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+    { videoId: "e2", title: "Part 2", description: "", publishedAt: "2026-01-04", durationSeconds: 100, thumbnails: {}, episodeNumber: 2, episodeLabel: "Episode 2" },
+  ],
+};
 
 describe("local library transitions", () => {
   it("records the first start and updates last opened", () => {
@@ -45,5 +58,25 @@ describe("local library transitions", () => {
     expect(twice.videos.a.historyImport?.importCount).toBe(3);
     const opened = markOpened(twice, "a");
     expect(getVideoState(resetProgress(opened, "a"), "a").watched).toBe(true);
+  });
+  it("derives one show state from its episode states and selects the next episode", () => {
+    const started = markOpened(EMPTY_LIBRARY, "e1", "2026-01-01T00:00:00Z");
+    expect(getShowState(started, show)).toMatchObject({ started: true, watched: false, resumeVideoId: "e1" });
+    expect(selectContinueWatchingTitles([], [show], started)).toEqual([show]);
+
+    const firstWatched = toggleWatched(started, "e1", "2026-01-02T00:00:00Z");
+    expect(getShowState(firstWatched, show).resumeVideoId).toBe("e2");
+    const complete = toggleWatched(firstWatched, "e2", "2026-01-03T00:00:00Z");
+    expect(getShowState(complete, show)).toMatchObject({ watched: true, resumeVideoId: "e1" });
+    expect(selectWatchAgainTitles([], [show], complete)).toEqual([show]);
+  });
+  it("persists show-level My List and recommends only untouched titles", () => {
+    const listed = toggleShowMyList(EMPTY_LIBRARY, show.showId);
+    expect(getShowState(listed, show).inMyList).toBe(true);
+    expect(selectRecommendedTitles([...movies, show], listed, 20)).toEqual([...movies, show]);
+    const started = markOpened(listed, "e1");
+    expect(selectRecommendedTitles([...movies, show], started, 20)).toEqual(movies);
+    const many = Array.from({ length: 25 }, (_, index) => ({ ...movies[0], videoId: `movie-${index}`, title: `Movie ${index}` }));
+    expect(selectRecommendedTitles(many, EMPTY_LIBRARY, 20)).toEqual(many.slice(0, 20));
   });
 });

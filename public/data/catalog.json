@@ -112,5 +112,70 @@
       "thumbnails": {},
       "categories": ["other-full-movies"]
     }
+  ],
+  "showCount": 2,
+  "shows": [
+    {
+      "showId": "show-what-if-naruto-left-konoha-demo0001",
+      "title": "What If Naruto Left Konoha",
+      "description": "Naruto leaves the Hidden Leaf and discovers how dramatically one decision can reshape the shinobi world.",
+      "latestPublishedAt": "2026-08-05T14:00:00Z",
+      "thumbnails": {},
+      "categories": ["naruto"],
+      "seasonNumber": 1,
+      "episodes": [
+        {
+          "videoId": "sNarutoE001",
+          "title": "What If Naruto Left Konoha Part 1",
+          "description": "Naruto makes the choice to leave the village behind.",
+          "publishedAt": "2026-07-22T14:00:00Z",
+          "durationSeconds": 1380,
+          "thumbnails": {},
+          "episodeNumber": 1,
+          "episodeLabel": "Episode 1"
+        },
+        {
+          "videoId": "sNarutoE002",
+          "title": "What If Naruto Left Konoha Part 2",
+          "description": "The Hidden Leaf responds while Naruto's new path becomes increasingly dangerous.",
+          "publishedAt": "2026-07-29T14:00:00Z",
+          "durationSeconds": 1460,
+          "thumbnails": {},
+          "episodeNumber": 2,
+          "episodeLabel": "Episode 2"
+        },
+        {
+          "videoId": "sNarutoE003",
+          "title": "What If Naruto Left Konoha Final",
+          "description": "Naruto's alternate journey reaches its decisive conclusion.",
+          "publishedAt": "2026-08-05T14:00:00Z",
+          "durationSeconds": 1520,
+          "thumbnails": {},
+          "episodeNumber": 3,
+          "episodeLabel": "Final"
+        }
+      ]
+    },
+    {
+      "showId": "show-what-if-aang-never-disappeared-demo0002",
+      "title": "What If Aang Never Disappeared",
+      "description": "A one-shot alternate Avatar history in which Aang remains to face the Fire Nation.",
+      "latestPublishedAt": "2026-07-25T14:00:00Z",
+      "thumbnails": {},
+      "categories": ["avatar"],
+      "seasonNumber": 1,
+      "episodes": [
+        {
+          "videoId": "sAvatarE001",
+          "title": "What If Aang Never Disappeared",
+          "description": "Aang faces an entirely different destiny by remaining in the world.",
+          "publishedAt": "2026-07-25T14:00:00Z",
+          "durationSeconds": 1740,
+          "thumbnails": {},
+          "episodeNumber": 1,
+          "episodeLabel": "Episode 1"
+        }
+      ]
+    }
   ]
 }

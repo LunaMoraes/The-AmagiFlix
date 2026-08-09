@@ -3,7 +3,7 @@
   "name": "AmagiFlix Companion",
   "short_name": "AmagiFlix",
   "description": "Tracks playback only for videos in the public AmagiFlix catalog.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "permissions": ["storage", "webNavigation"],
   "host_permissions": [
     "https://www.youtube.com/*",

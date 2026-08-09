@@ -57,6 +57,11 @@ export interface WebVideoState {
 export interface WebLibraryV2 {
   schemaVersion: 2;
   videos: Record<string, WebVideoState>;
+  shows: Record<string, WebShowState>;
+}
+
+export interface WebShowState {
+  inMyList: boolean;
 }
 
 export type LocalLibrary = WebLibraryV2;
@@ -68,6 +73,18 @@ export interface ResolvedVideoState extends WebVideoState {
   progress?: MeasuredProgress;
   sources: WatchSource[];
 }
+
+export interface ResolvedShowState {
+  inMyList: boolean;
+  started: boolean;
+  watched: boolean;
+  watchedAt?: string;
+  progress?: MeasuredProgress;
+  sources: WatchSource[];
+  resumeVideoId: string;
+}
+
+export type ResolvedTitleState = ResolvedVideoState | ResolvedShowState;
 
 export interface HistoryImportMetadata {
   completed: true;

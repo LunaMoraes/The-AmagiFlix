@@ -3,10 +3,10 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { useHistoryImport } from "../context/HistoryImportContext";
 import { useLibrary } from "../context/LibraryContext";
 import { importHistory, type HistoryImportResult } from "../history-import/import-history";
-import type { CatalogMovie } from "../types/catalog";
+import type { CatalogMovie, CatalogShow } from "../types/catalog";
 import styles from "../styles/app.module.css";
 
-export function HistoryImportDialog({ movies }: { movies: CatalogMovie[] }) {
+export function HistoryImportDialog({ movies, shows }: { movies: CatalogMovie[]; shows: CatalogShow[] }) {
   const { dialogOpen, closeImport, complete } = useHistoryImport();
   const { mergeImport, stateFor } = useLibrary();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -28,7 +28,7 @@ export function HistoryImportDialog({ movies }: { movies: CatalogMovie[] }) {
     if (!file) return;
     setStatus("processing"); setError("");
     try {
-      const imported = await importHistory(file, new Set(movies.map((movie) => movie.videoId)));
+      const imported = await importHistory(file, new Set([...movies.map((movie) => movie.videoId), ...shows.flatMap((show) => show.episodes.map((episode) => episode.videoId))]));
       const newlyMarked = imported.matches.filter((record) => !stateFor(record.videoId).watched).length;
       mergeImport(imported.matches);
       const metadata = { completed: true as const, completedAt: new Date().toISOString(), matchedCount: imported.matches.length };
@@ -48,7 +48,7 @@ export function HistoryImportDialog({ movies }: { movies: CatalogMovie[] }) {
         <FileArchive className={styles.importHeroIcon} aria-hidden="true" />
         <h2 id="import-dialog-title">{status === "success" ? "History import complete" : "Import YouTube History"}</h2>
         {status === "idle" && <>
-          <p>Choose a Google activity JSON, HTML, or Takeout ZIP export. AmagiFlix will keep only watched markers for movies in this catalog.</p>
+          <p>Choose a Google activity JSON, HTML, or Takeout ZIP export. AmagiFlix will keep only watched markers for movies and episodes in this catalog.</p>
           <p className={styles.privacyNote}><ShieldCheck /> Your export is processed locally in this browser and is never uploaded.</p>
           <label className={`${styles.button} ${styles.buttonPrimary}`}>
             Choose history file

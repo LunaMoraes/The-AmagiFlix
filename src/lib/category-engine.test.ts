@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CATEGORY_RULES, getCategoryLabel } from "../config/categories";
-import { classifyMovie, isFullMovieTitle } from "./category-engine";
+import { classifyMovie, classifyShow, isFullMovieTitle } from "./category-engine";
 
 describe("Full Movie filtering", () => {
   it.each(["What If X Happened? (Full Movie)", "FULL MOVIE - The Story", "A full   movie timeline"])("includes %s", (title) => expect(isFullMovieTitle(title)).toBe(true));
@@ -16,5 +16,10 @@ describe("category classification", () => {
   })).toEqual(["naruto"]));
   it("uses the fallback without dropping an eligible movie", () => expect(classifyMovie({ title: "An Unknown Timeline (Full Movie)" })).toEqual(["other-full-movies"]));
   it("exposes the fallback as Uncategorized Full Movies", () => expect(getCategoryLabel("other-full-movies")).toBe("Uncategorized Full Movies"));
+  it("categorizes shows with a separate visible fallback", () => {
+    expect(classifyShow({ title: "What If Naruto Left Konoha" })).toEqual(["naruto"]);
+    expect(classifyShow({ title: "What If An Unknown Hero Vanished" })).toEqual(["other-shows"]);
+    expect(getCategoryLabel("other-shows")).toBe("Uncategorized Shows");
+  });
   it("does not expose a Marvel category", () => expect(CATEGORY_RULES.some((rule) => rule.id === "marvel")).toBe(false));
 });

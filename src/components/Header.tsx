@@ -40,7 +40,7 @@ export function Header() {
         <NavLink to="/" className={styles.wordmark} aria-label="The AmagiFlix home"><span>THE</span> AMAGIFLIX</NavLink>
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <NavLink to="/" end className={navClass}>Home</NavLink>
-          <NavLink to="/movies" className={navClass}>Full Movies</NavLink>
+          <NavLink to="/movies" className={navClass}>Movies &amp; Shows</NavLink>
           <NavLink to="/my-list" className={navClass}>My List</NavLink>
         </nav>
         <form className={`${styles.headerSearch} ${searchOpen ? styles.headerSearchOpen : ""}`} onSubmit={submitSearch} role="search">
@@ -48,7 +48,7 @@ export function Header() {
             <SearchIcon aria-hidden="true" />
           </button>
           <input
-            aria-label="Search movies"
+            aria-label="Search movies and shows"
             placeholder="Titles, people, genres"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -60,7 +60,7 @@ export function Header() {
         <NavLink to="/" end className={navClass}><Home aria-hidden="true" /><span>Home</span></NavLink>
         <NavLink to="/search" className={navClass}><SearchIcon aria-hidden="true" /><span>Search</span></NavLink>
         <NavLink to="/my-list" className={navClass}><ListPlus aria-hidden="true" /><span>My List</span></NavLink>
-        <NavLink to="/movies" className={navClass}><Film aria-hidden="true" /><span>Movies</span></NavLink>
+        <NavLink to="/movies" className={navClass}><Film aria-hidden="true" /><span>Browse</span></NavLink>
       </nav>
     </>
   );

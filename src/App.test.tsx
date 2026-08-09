@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { LibraryProvider } from "./context/LibraryContext";
 import { ProfileProvider } from "./context/ProfileContext";
@@ -16,10 +16,28 @@ const catalog = {
   movieCount: 1,
   movies: [{ videoId: "abcDEF12345", title: "Naruto Full Movie", description: "A complete hero story.", publishedAt: "2026-01-01T00:00:00Z", durationSeconds: 7200, thumbnails: {}, categories: ["naruto"] }],
 };
+const catalogWithShow = {
+  ...catalog,
+  showCount: 1,
+  shows: [{
+    showId: "show-naruto-left",
+    title: "What If Naruto Left Konoha",
+    description: "An alternate Naruto timeline.",
+    latestPublishedAt: "2026-02-02T00:00:00Z",
+    thumbnails: {},
+    categories: ["naruto"],
+    seasonNumber: 1,
+    episodes: [
+      { videoId: "epNaruto001", title: "What If Naruto Left Konoha Part 1", description: "Sasuke searches for Naruto.", publishedAt: "2026-02-01T00:00:00Z", durationSeconds: 600, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+      { videoId: "epNaruto002", title: "What If Naruto Left Konoha Final", description: "The final confrontation.", publishedAt: "2026-02-02T00:00:00Z", durationSeconds: 700, thumbnails: {}, episodeNumber: 2, episodeLabel: "Final" },
+    ],
+  }],
+};
 
-const renderApp = () => render(<MemoryRouter initialEntries={["/"]}><ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider></MemoryRouter>);
+const renderApp = (entry = "/") => render(<MemoryRouter initialEntries={[entry]}><ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider></MemoryRouter>);
 
 afterEach(() => vi.restoreAllMocks());
+beforeEach(() => localStorage.clear());
 
 describe("App", () => {
   it("loads the catalog, opens details, and persists watch state before following the link", async () => {
@@ -94,5 +112,30 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: /Browser Extension/ }));
     expect(screen.getByRole("link", { name: /Download Extension ZIP/ })).toHaveAttribute("href", "/downloads/amagiflix-companion.zip");
     expect(screen.getByText(/chrome:\/\/extensions/)).toBeInTheDocument();
+  });
+
+  it("opens a show once with Season 1 episodes and persists show-level My List", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
+    const user = userEvent.setup();
+    renderApp();
+    const cards = await screen.findAllByRole("button", { name: "More information about What If Naruto Left Konoha" });
+    expect(within(cards[0]).getByText("Series")).toBeInTheDocument();
+    await user.click(cards[0]);
+    const dialog = await screen.findByRole("dialog", { name: "What If Naruto Left Konoha" });
+    expect(within(dialog).getByRole("heading", { name: "Season 1" })).toBeInTheDocument();
+    expect(within(dialog).getByRole("link", { name: "Watch Episode 1 on YouTube" })).toHaveAttribute("href", "https://www.youtube.com/watch?v=epNaruto001");
+    await user.click(within(dialog).getByRole("button", { name: "Add show to My List" }));
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).shows["show-naruto-left"].inMyList).toBe(true);
+  });
+
+  it("searches episode copy as one show and places Recommended before Recently Added", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
+    const { unmount } = renderApp();
+    const recommended = await screen.findByRole("heading", { name: "Recommended" });
+    const recentlyAdded = screen.getByRole("heading", { name: "Recently Added Full Movies" });
+    expect(recommended.compareDocumentPosition(recentlyAdded) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    unmount();
+    renderApp("/search?q=Sasuke");
+    expect((await screen.findAllByRole("button", { name: "More information about What If Naruto Left Konoha" }))).toHaveLength(1);
   });
 });
