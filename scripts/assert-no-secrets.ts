@@ -23,4 +23,18 @@ for (const file of await filesWithin(dist)) {
   if (text.includes(forbiddenRuntimeEndpoint)) throw new Error(`YouTube Data API endpoint leaked into ${file}.`);
 }
 
-console.log("Public build contains no catalog credential or runtime YouTube Data API endpoint.");
+const indexHtml = await readFile(resolve(dist, "index.html"), "utf8");
+if (!indexHtml.includes('src="./assets/') || !indexHtml.includes('href="./assets/')) {
+  throw new Error("Production assets must use relative URLs so GitHub Pages path casing remains portable.");
+}
+
+const browserJavaScript = await Promise.all(
+  (await filesWithin(resolve(dist, "assets")))
+    .filter((file) => file.endsWith(".js"))
+    .map((file) => readFile(file, "utf8")),
+);
+if (!browserJavaScript.some((contents) => contents.includes("./data/catalog.json"))) {
+  throw new Error("Catalog URL must remain relative to the deployed GitHub Pages project path.");
+}
+
+console.log("Public build uses portable relative paths and contains no catalog credential or runtime YouTube Data API endpoint.");

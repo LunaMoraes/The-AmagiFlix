@@ -39,7 +39,9 @@ The generator resolves `@TheAmagiYT`, walks the uploads playlist, fetches videos
 3. Under **Settings → Pages**, choose **GitHub Actions** as the source.
 4. Push to `main` or run **Build catalog and deploy AmagiFlix** manually from Actions.
 
-The workflow also runs every day at 06:00 UTC. Production assets use the `/theamagiflix/` base path. If the repository is renamed, update `base` in `vite.config.ts` before deploying.
+The workflow also runs every day at 06:00 UTC. Production assets use relative URLs, so the project works under both `/theamagiflix/` and `/The-AmagiFlix/` and does not need a rebuild if only the repository-path casing changes.
+
+Only the newest Pages workflow remains active when deployments overlap, and once the deployment job starts it has a 10-minute timeout.
 
 ## Architecture and privacy
 
