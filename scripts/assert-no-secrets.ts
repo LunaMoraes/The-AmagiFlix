@@ -36,6 +36,14 @@ const manifest = JSON.parse(await readFile(resolve(extensionDist, "manifest.json
 const permissions = [...(manifest.permissions as string[] ?? []), ...(manifest.host_permissions as string[] ?? [])];
 for (const forbidden of ["history", "cookies", "tabs", "<all_urls>"]) if (permissions.includes(forbidden)) throw new Error(`Forbidden extension permission: ${forbidden}.`);
 if (manifest.manifest_version !== 3) throw new Error("Companion extension must use Manifest V3.");
+
+const contentScripts = (manifest.content_scripts as Array<{ js?: string[] }> | undefined) ?? [];
+for (const script of contentScripts.flatMap((entry) => entry.js ?? [])) {
+  const source = await readFile(resolve(extensionDist, script), "utf8");
+  if (/(^|[;\n])\s*(?:import(?:[\s{*]|["'])|export\s)/m.test(source)) {
+    throw new Error(`Manifest content script must be a self-contained classic script: ${script}.`);
+  }
+}
 await stat(resolve(dist, "downloads", "amagiflix-companion.zip"));
 
 const indexHtml = await readFile(resolve(dist, "index.html"), "utf8");

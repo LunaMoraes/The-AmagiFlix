@@ -7,7 +7,7 @@
     "dev": "vite",
     "catalog": "tsx scripts/build-catalog.ts",
     "build:web": "vite build",
-    "build:extension": "vite build --config extension/vite.config.ts && tsx scripts/package-extension.ts",
+    "build:extension": "vite build --config extension/vite.config.ts && vite build --config extension/vite.app-bridge.config.ts && tsx scripts/package-extension.ts",
     "build": "tsc -b && npm run build:web && npm run build:extension",
     "test": "vitest run",
     "test:watch": "vitest",
