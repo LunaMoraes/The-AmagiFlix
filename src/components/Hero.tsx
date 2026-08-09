@@ -20,7 +20,7 @@ export function Hero({ movie }: { movie: CatalogMovie }) {
       <div className={styles.heroFallback} aria-hidden="true"><span>AMAGI</span></div>
       <div className={styles.heroGradient} />
       <div className={styles.heroContent}>
-        <p className={styles.eyebrow}>AMAGIFLIX FEATURE</p>
+        <p className={styles.eyebrow}>THE AMAGIFLIX FEATURE</p>
         <h1 id="featured-title">{movie.title}</h1>
         <p className={styles.heroMeta}>{new Date(movie.publishedAt).getFullYear()} <span>•</span> {getCategoryLabel(movie.categories[0])}</p>
         <p className={styles.heroDescription}>{excerpt}</p>

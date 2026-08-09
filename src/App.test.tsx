@@ -4,7 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { LibraryProvider } from "./context/LibraryContext";
-import { STORAGE_KEY } from "./config/app";
+import { ProfileProvider } from "./context/ProfileContext";
+import { PROFILE_STORAGE_KEY, STORAGE_KEY } from "./config/app";
 
 const catalog = {
   schemaVersion: 1,
@@ -14,7 +15,7 @@ const catalog = {
   movies: [{ videoId: "movie-1", title: "Naruto Full Movie", description: "A complete hero story.", publishedAt: "2026-01-01T00:00:00Z", durationSeconds: 7200, thumbnails: {}, categories: ["naruto"] }],
 };
 
-const renderApp = () => render(<MemoryRouter initialEntries={["/"]}><LibraryProvider><App /></LibraryProvider></MemoryRouter>);
+const renderApp = () => render(<MemoryRouter initialEntries={["/"]}><ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider></MemoryRouter>);
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -51,5 +52,21 @@ describe("App", () => {
     renderApp();
     await user.click(await screen.findByRole("button", { name: /retry/i }));
     await waitFor(() => expect(screen.getByRole("heading", { name: "Naruto Full Movie" })).toBeInTheDocument());
+  });
+
+  it("stores the profile name and exposes disabled future settings", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalog }));
+    const user = userEvent.setup();
+    renderApp();
+    await screen.findByRole("heading", { name: "Naruto Full Movie" });
+    await user.click(screen.getByRole("button", { name: "Open account menu" }));
+    await user.click(screen.getByRole("button", { name: /Profile Guest/ }));
+    const name = screen.getByRole("textbox", { name: "Display name" });
+    await user.clear(name);
+    await user.type(name, "Luna");
+    await user.click(screen.getByRole("button", { name: "Save profile" }));
+    expect(JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY)!).name).toBe("Luna");
+    await user.click(screen.getByRole("button", { name: /Settings Preferences and data/ }));
+    expect(screen.getByRole("button", { name: /Import Watch History/ })).toBeDisabled();
   });
 });

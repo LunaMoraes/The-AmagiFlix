@@ -29,3 +29,36 @@ test("mobile navigation is available", async ({ page }, testInfo) => {
   await expect(navigation).toBeVisible();
   await expect(navigation.getByRole("link", { name: /Search/ })).toBeVisible();
 });
+
+test("collapsed search icon stays fully inside its control", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Desktop header search is hidden on mobile");
+  await page.goto("/");
+  const search = page.getByRole("search");
+  const trigger = page.getByRole("button", { name: "Open search" });
+  const [searchBox, triggerBox] = await Promise.all([search.boundingBox(), trigger.boundingBox()]);
+  expect(searchBox).not.toBeNull();
+  expect(triggerBox).not.toBeNull();
+  expect(triggerBox!.x).toBeGreaterThanOrEqual(searchBox!.x);
+  expect(triggerBox!.x + triggerBox!.width).toBeLessThanOrEqual(searchBox!.x + searchBox!.width);
+});
+
+test("profile menu persists the name and exposes planned settings", async ({ page }) => {
+  await page.goto("/");
+  const wordmark = page.getByRole("link", { name: "The AmagiFlix home" });
+  const wordmarkBefore = await wordmark.boundingBox();
+  await page.getByRole("button", { name: "Open account menu" }).click();
+  const panel = page.getByRole("dialog", { name: "Account menu" });
+  const [wordmarkAfter, panelBox] = await Promise.all([wordmark.boundingBox(), panel.boundingBox()]);
+  expect(wordmarkAfter?.x).toBe(wordmarkBefore?.x);
+  expect(panelBox?.x).toBe(page.viewportSize()!.width - panelBox!.width);
+  expect(panelBox?.y).toBe(0);
+  await page.getByRole("button", { name: /Profile Guest/ }).click();
+  await page.getByRole("textbox", { name: "Display name" }).fill("Luna");
+  await page.getByRole("button", { name: "Save profile" }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "Open account menu" }).click();
+  await expect(page.getByRole("button", { name: /Profile Luna/ })).toBeVisible();
+  await page.getByRole("button", { name: /Settings Preferences and data/ }).click();
+  await expect(page.getByRole("button", { name: /Import Watch History/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /Browser Extension/ })).toHaveCount(0);
+});

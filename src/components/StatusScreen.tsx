@@ -6,5 +6,5 @@ export function LoadingScreen() {
 }
 
 export function ErrorScreen({ retry }: { retry(): void }) {
-  return <main className={styles.statusScreen}><AlertTriangle /><h1>AmagiFlix could not load the catalog.</h1><p>Check your connection and try again.</p><button className={`${styles.button} ${styles.buttonPrimary}`} onClick={retry}><RotateCw /> Retry</button></main>;
+  return <main className={styles.statusScreen}><AlertTriangle /><h1>The AmagiFlix could not load the catalog.</h1><p>Check your connection and try again.</p><button className={`${styles.button} ${styles.buttonPrimary}`} onClick={retry}><RotateCw /> Retry</button></main>;
 }

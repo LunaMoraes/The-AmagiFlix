@@ -2,6 +2,7 @@ import { Film, Home, ListPlus, Search as SearchIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "../styles/app.module.css";
+import { AccountMenu } from "./AccountMenu";
 
 const navClass = ({ isActive }: { isActive: boolean }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`;
 
@@ -36,7 +37,7 @@ export function Header() {
   return (
     <>
       <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ""}`}>
-        <NavLink to="/" className={styles.wordmark} aria-label="AmagiFlix home">AMAGIFLIX</NavLink>
+        <NavLink to="/" className={styles.wordmark} aria-label="The AmagiFlix home"><span>THE</span> AMAGIFLIX</NavLink>
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <NavLink to="/" end className={navClass}>Home</NavLink>
           <NavLink to="/movies" className={navClass}>Full Movies</NavLink>
@@ -53,6 +54,7 @@ export function Header() {
             onChange={(event) => setQuery(event.target.value)}
           />
         </form>
+        <AccountMenu />
       </header>
       <nav className={styles.mobileNav} aria-label="Mobile navigation">
         <NavLink to="/" end className={navClass}><Home aria-hidden="true" /><span>Home</span></NavLink>

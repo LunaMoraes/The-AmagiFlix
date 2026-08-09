@@ -25,7 +25,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <MovieDetails movies={movies} />
-      <footer className={styles.footer}>Fan-made project. Video content is hosted and played on YouTube. AmagiFlix is not affiliated with Netflix or The Amagi.</footer>
+      <footer className={styles.footer}>Fan-made project. Video content is hosted and played on YouTube. The AmagiFlix is not affiliated with Netflix or The Amagi.</footer>
     </div>
   );
 }
