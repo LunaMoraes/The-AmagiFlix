@@ -42,7 +42,7 @@ test("collapsed search icon stays fully inside its control", async ({ page }, te
   expect(triggerBox!.x + triggerBox!.width).toBeLessThanOrEqual(searchBox!.x + searchBox!.width);
 });
 
-test("profile menu persists the name and exposes planned settings", async ({ page }) => {
+test("profile menu persists the name and exposes V2 settings", async ({ page }) => {
   await page.goto("/");
   const wordmark = page.getByRole("link", { name: "The AmagiFlix home" });
   const wordmarkBefore = await wordmark.boundingBox();
@@ -60,6 +60,38 @@ test("profile menu persists the name and exposes planned settings", async ({ pag
   await page.getByRole("button", { name: "Open account menu" }).click();
   await expect(page.getByRole("button", { name: /Profile Luna/ })).toBeVisible();
   await page.getByRole("button", { name: /Settings Preferences and data/ }).click();
-  await expect(page.getByRole("button", { name: /Import Watch History/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /Import Watch History/ })).toBeEnabled();
   await expect(page.getByRole("button", { name: /Browser Extension/ })).toHaveCount(0);
+});
+
+test("extension view exposes the stable Pages ZIP download", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open account menu" }).click();
+  await page.getByRole("button", { name: /Browser Extension/ }).click();
+  await expect(page.getByRole("link", { name: /Download Extension ZIP/ })).toHaveAttribute("href", /downloads\/amagiflix-companion\.zip$/);
+  await expect(page.getByText(/chrome:\/\/extensions/)).toBeVisible();
+});
+
+test("history import marks a matching catalog movie without fabricated progress", async ({ page }) => {
+  await page.goto("/");
+  const videoId = await page.evaluate(async () => (await (await fetch("./data/catalog.json")).json()).movies[0].videoId as string);
+  await page.getByRole("button", { name: "Import History" }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "history.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify([{ title: "Watched Full Movie", titleUrl: `https://youtube.com/watch?v=${videoId}`, products: ["YouTube"] }])),
+  });
+  await expect(page.getByRole("heading", { name: "History import complete" })).toBeVisible();
+  await expect(page.getByText("Newly marked watched")).toBeVisible();
+  const state = await page.evaluate((id) => JSON.parse(localStorage.getItem("amagiflix:library:v2")!).videos[id], videoId);
+  expect(state.historyImport.watched).toBe(true);
+  expect(state.extension?.progress).toBeUndefined();
+});
+
+test("measured extension progress renders a real progress bar", async ({ page }) => {
+  await page.goto("/");
+  const videoId = await page.evaluate(async () => (await (await fetch("./data/catalog.json")).json()).movies[0].videoId as string);
+  await page.evaluate((id) => localStorage.setItem("amagiflix:library:v2", JSON.stringify({ schemaVersion: 2, videos: { [id]: { inMyList: false, extension: { videoId: id, started: true, watched: false, sources: ["extension"], progress: { currentSeconds: 42, durationSeconds: 100, measuredAt: "2026-01-01T00:00:00Z" } } } } })), videoId);
+  await page.reload();
+  await expect(page.getByLabel("42% watched").first()).toBeVisible();
 });

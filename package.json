@@ -1,19 +1,22 @@
 {
   "name": "amagiflix",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "catalog": "tsx scripts/build-catalog.ts",
-    "build": "tsc -b && vite build",
+    "build:web": "vite build",
+    "build:extension": "vite build --config extension/vite.config.ts && tsx scripts/package-extension.ts",
+    "build": "tsc -b && npm run build:web && npm run build:extension",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "tsx scripts/run-e2e.ts",
     "assert:no-secrets": "tsx scripts/assert-no-secrets.ts",
     "check": "npm run test && npm run build"
   },
   "dependencies": {
+    "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -24,6 +27,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/chrome": "^0.2.5",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",

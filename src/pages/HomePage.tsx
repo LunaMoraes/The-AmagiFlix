@@ -4,6 +4,7 @@ import { selectContinueWatching, selectMyList, selectWatchAgain } from "../lib/l
 import { selectFeaturedMovie } from "../lib/movies";
 import type { CatalogMovie } from "../types/catalog";
 import { Hero } from "../components/Hero";
+import { HistoryImportCard } from "../components/HistoryImportCard";
 import { MovieShelf } from "../components/MovieShelf";
 import styles from "../styles/app.module.css";
 
@@ -19,6 +20,7 @@ export function HomePage({ movies }: { movies: CatalogMovie[] }) {
     <main>
       <Hero movie={featured} />
       <div className={styles.homeShelves}>
+        <HistoryImportCard />
         <MovieShelf title="Continue Watching" movies={continueWatching} />
         <MovieShelf title="My List" movies={myList} />
         <MovieShelf title="Recently Added Full Movies" movies={movies} />

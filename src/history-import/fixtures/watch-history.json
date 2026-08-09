@@ -1,0 +1,29 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Naruto Full Movie",
+    "titleUrl": "https://www.youtube.com/watch?v=abcDEF12345",
+    "time": "2024-01-02T03:04:05.000Z",
+    "products": ["YouTube"],
+    "activityControls": ["YouTube watch history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Assistiu Naruto Full Movie",
+    "titleUrl": "https://youtu.be/abcDEF12345",
+    "time": "2025-02-03T04:05:06.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Unrelated Video",
+    "titleUrl": "https://m.youtube.com/watch?v=ZYX987abc_1",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Searched for Naruto",
+    "titleUrl": "https://www.youtube.com/watch?v=abcDEF12345",
+    "products": ["YouTube"]
+  }
+]

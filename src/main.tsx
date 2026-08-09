@@ -4,12 +4,14 @@ import { HashRouter } from "react-router-dom";
 import App from "./App";
 import { LibraryProvider } from "./context/LibraryContext";
 import { ProfileProvider } from "./context/ProfileContext";
+import { ExtensionBridgeProvider } from "./context/ExtensionBridgeContext";
+import { HistoryImportProvider } from "./context/HistoryImportContext";
 import "./styles/global.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HashRouter>
-      <ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider>
+      <ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider>
     </HashRouter>
   </StrictMode>,
 );
