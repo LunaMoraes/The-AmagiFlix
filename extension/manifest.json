@@ -3,11 +3,11 @@
   "name": "AmagiFlix Companion",
   "short_name": "AmagiFlix",
   "description": "Tracks playback only for videos in the public AmagiFlix catalog.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "permissions": ["storage", "webNavigation"],
   "host_permissions": [
     "https://www.youtube.com/*",
-    "https://lunamoraes.github.io/*"
+    "https://theamagiflix.com/*"
   ],
   "background": {
     "service_worker": "service-worker.js",
@@ -20,11 +20,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://lunamoraes.github.io/*"],
-      "include_globs": [
-        "https://lunamoraes.github.io/The-AmagiFlix/*",
-        "https://lunamoraes.github.io/theamagiflix/*"
-      ],
+      "matches": ["https://theamagiflix.com/*"],
       "js": ["app-bridge.js"],
       "run_at": "document_start"
     }

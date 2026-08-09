@@ -3,7 +3,7 @@ import type { ImportedWatchState } from "../../src/types/library";
 import { getCatalogVideoIds, isCatalogVideo, refreshCatalog } from "./catalog-cache";
 import { applyTrackerCheckpoint, clearImported, loadStore, mergeImported, resetVideoProgress, setManualDecision, type TrackerCheckpoint } from "./storage";
 
-const APP_URL = /^https:\/\/lunamoraes\.github\.io\/(?:The-AmagiFlix|theamagiflix)(?:\/|$)/;
+const APP_URL = /^https:\/\/theamagiflix\.com(?:\/|$)/;
 const appPorts = new Set<chrome.runtime.Port>();
 
 const response = (requestId: string, message: ExtensionToWebInput): ExtensionToWebMessage => ({ ...message, protocolVersion: BRIDGE_PROTOCOL_VERSION, requestId } as ExtensionToWebMessage);

@@ -36,8 +36,17 @@ const manifest = JSON.parse(await readFile(resolve(extensionDist, "manifest.json
 const permissions = [...(manifest.permissions as string[] ?? []), ...(manifest.host_permissions as string[] ?? [])];
 for (const forbidden of ["history", "cookies", "tabs", "<all_urls>"]) if (permissions.includes(forbidden)) throw new Error(`Forbidden extension permission: ${forbidden}.`);
 if (manifest.manifest_version !== 3) throw new Error("Companion extension must use Manifest V3.");
+const expectedHostPermissions = ["https://www.youtube.com/*", "https://theamagiflix.com/*"];
+const hostPermissions = (manifest.host_permissions as string[] | undefined) ?? [];
+if (hostPermissions.length !== expectedHostPermissions.length || expectedHostPermissions.some((permission) => !hostPermissions.includes(permission))) {
+  throw new Error("Companion extension host permissions must be limited to YouTube and the canonical AmagiFlix domain.");
+}
 
-const contentScripts = (manifest.content_scripts as Array<{ js?: string[] }> | undefined) ?? [];
+const contentScripts = (manifest.content_scripts as Array<{ js?: string[]; matches?: string[] }> | undefined) ?? [];
+const bridgeScript = contentScripts.find((entry) => entry.js?.includes("app-bridge.js"));
+if (!bridgeScript || bridgeScript.matches?.length !== 1 || bridgeScript.matches[0] !== "https://theamagiflix.com/*") {
+  throw new Error("Companion bridge content script must be scoped to the canonical AmagiFlix domain.");
+}
 for (const script of contentScripts.flatMap((entry) => entry.js ?? [])) {
   const source = await readFile(resolve(extensionDist, script), "utf8");
   if (/(^|[;\n])\s*(?:import(?:[\s{*]|["'])|export\s)/m.test(source)) {
@@ -47,8 +56,8 @@ for (const script of contentScripts.flatMap((entry) => entry.js ?? [])) {
 await stat(resolve(dist, "downloads", "amagiflix-companion.zip"));
 
 const indexHtml = await readFile(resolve(dist, "index.html"), "utf8");
-if (!indexHtml.includes('src="./assets/') || !indexHtml.includes('href="./assets/')) {
-  throw new Error("Production assets must use relative URLs so GitHub Pages path casing remains portable.");
+if (!indexHtml.includes('src="/assets/') || !indexHtml.includes('href="/assets/')) {
+  throw new Error("Production assets must resolve from the canonical domain root.");
 }
 
 const browserJavaScript = await Promise.all(
@@ -56,8 +65,17 @@ const browserJavaScript = await Promise.all(
     .filter((file) => file.endsWith(".js"))
     .map((file) => readFile(file, "utf8")),
 );
-if (!browserJavaScript.some((contents) => contents.includes("./data/catalog.json"))) {
-  throw new Error("Catalog URL must remain relative to the deployed GitHub Pages project path.");
+if (!browserJavaScript.some((contents) => contents.includes("/data/catalog.json"))) {
+  throw new Error("Catalog URL must resolve from the canonical domain root.");
+}
+
+const extensionJavaScript = await Promise.all(
+  (await filesWithin(extensionDist))
+    .filter((file) => file.endsWith(".js"))
+    .map((file) => readFile(file, "utf8")),
+);
+if ([...browserJavaScript, ...extensionJavaScript].some((contents) => contents.includes("lunamoraes.github.io"))) {
+  throw new Error("Legacy GitHub Pages host leaked into the production JavaScript.");
 }
 
 console.log("Web and extension builds use scoped paths/permissions and contain no catalog credential or runtime YouTube Data API endpoint.");

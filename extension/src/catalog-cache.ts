@@ -1,6 +1,6 @@
 import { loadStore, saveStore } from "./storage";
 
-const CATALOG_URL = "https://lunamoraes.github.io/The-AmagiFlix/data/catalog.json";
+const CATALOG_URL = "https://theamagiflix.com/data/catalog.json";
 const MAX_AGE_MS = 12 * 60 * 60 * 1_000;
 let refreshPromise: Promise<Set<string>> | undefined;
 

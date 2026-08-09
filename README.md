@@ -43,14 +43,15 @@ The generator resolves `@TheAmagiYT`, walks the uploads playlist, and fetches vi
 
 Rare spelling differences can be handled explicitly in `src/config/show-aliases.ts`. Broad fuzzy matches are reported for review but never suppress a show automatically. Franchise classification uses only show and episode titles; generic titles that cannot be matched safely use normalized identities in `src/config/show-category-overrides.ts`.
 
-## GitHub Pages deployment
+## Custom-domain GitHub Pages deployment
 
 1. Link the checkout to the intended GitHub repository.
 2. Open **Settings → Secrets and variables → Actions** and add `YOUTUBE_API_KEY`.
-3. Under **Settings → Pages**, choose **GitHub Actions**.
-4. Push to `main` or manually run **Build catalog and deploy AmagiFlix**.
+3. Under **Settings → Pages**, choose **GitHub Actions** and configure `theamagiflix.com` as the custom domain.
+4. After GitHub provisions the certificate, enable **Enforce HTTPS**.
+5. Push to `main` or manually run **Build catalog and deploy AmagiFlix**.
 
-The workflow also runs daily at 06:00 UTC. Assets and the extension download use relative URLs, so the web build remains portable between `/theamagiflix/` and `/The-AmagiFlix/`. The companion bridge recognizes both deployed path variants.
+The workflow also runs daily at 06:00 UTC. The production application is rooted at `https://theamagiflix.com/`; its assets, catalog, and extension download resolve from that domain root. The companion bridge and catalog client intentionally do not use the former `github.io` project URL as a fallback.
 
 ## Importing YouTube history
 
@@ -80,7 +81,7 @@ Chrome does not allow ordinary users on Windows or macOS to directly install a s
 
 The companion:
 
-- Uses only `storage` and `webNavigation` plus host access to YouTube and the AmagiFlix Pages host.
+- Uses only `storage` and `webNavigation` plus host access to YouTube and `https://theamagiflix.com/*`.
 - Checks the current YouTube video ID against visible movies and show episodes in the public AmagiFlix catalog.
 - Stores playback only after 30 seconds of real, non-ad playback.
 - Checkpoints every 15 seconds and marks completion at 90% or the native ended event.
@@ -96,7 +97,7 @@ The extension cannot observe watches in mobile apps, TVs, consoles, Chromecast s
 - Import completion metadata uses `amagiflix.v2.historyImportCompleted`.
 - The YouTube Data API key exists only during trusted catalog generation and build leakage checks.
 - The browser and extension receive only normalized catalog data; neither contains OAuth data, tags, raw API responses, or the secret API key.
-- The extension bridge validates versioned messages and the complete AmagiFlix sender path. It exposes only AmagiFlix state operations—never arbitrary storage, browser history, or page DOM access.
+- The extension bridge validates versioned messages and accepts connections only from `https://theamagiflix.com`. It exposes only AmagiFlix state operations—never arbitrary storage, browser history, or page DOM access.
 - The build rejects forbidden extension permissions, runtime YouTube Data API endpoints, leaked credentials, and remote executable-code references.
 
 The AmagiFlix is not affiliated with Netflix or The Amagi. Video content is hosted and played by YouTube.
