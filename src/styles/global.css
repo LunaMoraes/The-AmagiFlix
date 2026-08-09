@@ -1,0 +1,29 @@
+:root {
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+  color: #fff;
+  background: #141414;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --background: #141414;
+  --surface: #181818;
+  --surface-soft: #2f2f2f;
+  --text: #fff;
+  --text-muted: #b3b3b3;
+  --red: #e50914;
+  --header-height: 68px;
+  --page-gutter: clamp(1rem, 4vw, 3.75rem);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--background); overflow-x: hidden; }
+body:has(dialog[open]) { overflow: hidden; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+button { color: inherit; }
+::selection { background: rgba(229, 9, 20, .75); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

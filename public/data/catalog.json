@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-09T00:00:00.000Z",
+  "sourceChannelId": "development-fixture",
+  "movieCount": 12,
+  "movies": [
+    {
+      "videoId": "demo-naruto",
+      "title": "The Complete Story of Naruto Uzumaki (Full Movie)",
+      "description": "From a lonely childhood to becoming the hero of the Hidden Leaf, revisit the defining chapters of Naruto Uzumaki's journey.",
+      "publishedAt": "2026-08-01T14:00:00Z",
+      "durationSeconds": 10842,
+      "thumbnails": {},
+      "categories": ["naruto"]
+    },
+    {
+      "videoId": "demo-avatar",
+      "title": "The Life of Avatar Aang (Full Movie)",
+      "description": "The last airbender awakens to a world at war and begins an extraordinary journey to restore balance.",
+      "publishedAt": "2026-07-20T14:00:00Z",
+      "durationSeconds": 9340,
+      "thumbnails": {},
+      "categories": ["avatar"]
+    },
+    {
+      "videoId": "demo-one-piece",
+      "title": "The Complete Journey of Monkey D. Luffy (Full Movie)",
+      "description": "Set sail with Luffy and the Straw Hats through their biggest battles, friendships, and dreams.",
+      "publishedAt": "2026-07-07T14:00:00Z",
+      "durationSeconds": 11965,
+      "thumbnails": {},
+      "categories": ["one-piece"]
+    },
+    {
+      "videoId": "demo-dragon-ball",
+      "title": "The Life of Goku: The Saiyan Legend (Full Movie)",
+      "description": "Goku's story from an unusual child on Earth to one of the universe's greatest defenders.",
+      "publishedAt": "2026-06-22T14:00:00Z",
+      "durationSeconds": 10120,
+      "thumbnails": {},
+      "categories": ["dragon-ball"]
+    },
+    {
+      "videoId": "demo-mha",
+      "title": "Deku: The World's Greatest Hero (Full Movie)",
+      "description": "A determined, quirkless student inherits an impossible power and learns what being a hero truly means.",
+      "publishedAt": "2026-06-02T14:00:00Z",
+      "durationSeconds": 8465,
+      "thumbnails": {},
+      "categories": ["my-hero-academia"]
+    },
+    {
+      "videoId": "demo-demon-slayer",
+      "title": "The Complete Story of Tanjiro Kamado (Full Movie)",
+      "description": "Tanjiro fights through grief, impossible odds, and fearsome demons to save the family he has left.",
+      "publishedAt": "2026-05-18T14:00:00Z",
+      "durationSeconds": 9732,
+      "thumbnails": {},
+      "categories": ["demon-slayer"]
+    },
+    {
+      "videoId": "demo-jujutsu",
+      "title": "The Strongest Sorcerer: Satoru Gojo (Full Movie)",
+      "description": "Explore the power, choices, and legacy of the most formidable modern jujutsu sorcerer.",
+      "publishedAt": "2026-04-27T14:00:00Z",
+      "durationSeconds": 7620,
+      "thumbnails": {},
+      "categories": ["jujutsu-kaisen"]
+    },
+    {
+      "videoId": "demo-aot",
+      "title": "The Tragedy of Eren Yeager (Full Movie)",
+      "description": "A boy who dreamed of freedom becomes the center of a conflict that reshapes his entire world.",
+      "publishedAt": "2026-04-10T14:00:00Z",
+      "durationSeconds": 11042,
+      "thumbnails": {},
+      "categories": ["attack-on-titan"]
+    },
+    {
+      "videoId": "demo-invincible",
+      "title": "The Rise of Invincible (Full Movie)",
+      "description": "Mark Grayson inherits extraordinary abilities—and the devastating truth behind his family's legacy.",
+      "publishedAt": "2026-03-16T14:00:00Z",
+      "durationSeconds": 6958,
+      "thumbnails": {},
+      "categories": ["invincible"]
+    },
+    {
+      "videoId": "demo-harry-potter",
+      "title": "The Complete History of Hogwarts (Full Movie)",
+      "description": "Enter the Wizarding World and uncover the founders, secrets, and conflicts that shaped Hogwarts.",
+      "publishedAt": "2026-02-28T14:00:00Z",
+      "durationSeconds": 8800,
+      "thumbnails": {},
+      "categories": ["wizarding-world"]
+    },
+    {
+      "videoId": "demo-marvel-dc",
+      "title": "Marvel and DC's Greatest Heroes Explained (Full Movie)",
+      "description": "A sweeping look at legendary heroes, rivalries, and turning points across two comic universes.",
+      "publishedAt": "2026-02-08T14:00:00Z",
+      "durationSeconds": 9220,
+      "thumbnails": {},
+      "categories": ["marvel", "dc"]
+    },
+    {
+      "videoId": "demo-other",
+      "title": "The Ultimate Animated Timeline (Full Movie)",
+      "description": "A complete chronology of a remarkable animated world, assembled as one feature-length story.",
+      "publishedAt": "2026-01-17T14:00:00Z",
+      "durationSeconds": 7400,
+      "thumbnails": {},
+      "categories": ["other-full-movies"]
+    }
+  ]
+}

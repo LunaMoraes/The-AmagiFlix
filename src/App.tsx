@@ -1,0 +1,31 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Header } from "./components/Header";
+import { MovieDetails } from "./components/MovieDetails";
+import { ErrorScreen, LoadingScreen } from "./components/StatusScreen";
+import { useCatalog } from "./hooks/useCatalog";
+import { HomePage } from "./pages/HomePage";
+import { MoviesPage } from "./pages/MoviesPage";
+import { MyListPage } from "./pages/MyListPage";
+import { SearchPage } from "./pages/SearchPage";
+import styles from "./styles/app.module.css";
+
+export default function App() {
+  const state = useCatalog();
+  if (state.status === "loading") return <LoadingScreen />;
+  if (state.status === "error") return <ErrorScreen retry={state.retry} />;
+  const movies = state.catalog.movies;
+  return (
+    <div className={styles.app}>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage movies={movies} />} />
+        <Route path="/movies" element={<MoviesPage movies={movies} />} />
+        <Route path="/my-list" element={<MyListPage movies={movies} />} />
+        <Route path="/search" element={<SearchPage movies={movies} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <MovieDetails movies={movies} />
+      <footer className={styles.footer}>Fan-made project. Video content is hosted and played on YouTube. AmagiFlix is not affiliated with Netflix or The Amagi.</footer>
+    </div>
+  );
+}
