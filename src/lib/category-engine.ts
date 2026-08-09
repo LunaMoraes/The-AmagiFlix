@@ -17,7 +17,7 @@ export function classifyMovie(input: { title: string; description?: string; tags
 }
 
 export function classifyShow(input: { title: string; description?: string; tags?: string[] }, rules: CategoryRule[] = CATEGORY_RULES): string[] {
-  const searchable = [input.title, input.description, ...(input.tags ?? [])].filter(Boolean).join(" ");
+  const searchable = input.title;
   const matches = rules
     .filter((rule) => rule.id !== OTHER_CATEGORY_ID && rule.id !== OTHER_SHOWS_CATEGORY_ID && rule.patterns.some((pattern) => pattern.test(searchable)))
     .sort((a, b) => a.priority - b.priority)

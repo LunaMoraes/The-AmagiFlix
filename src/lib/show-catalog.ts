@@ -1,5 +1,8 @@
 import { classifyShow } from "./category-engine";
 import { isFullMovieTitle } from "./category-engine";
+import { CATEGORY_RULES } from "../config/categories";
+import { SHOW_CATEGORY_OVERRIDES, type ShowCategoryOverrides } from "../config/show-category-overrides";
+import { OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID } from "../config/app";
 import type { CatalogArtwork, CatalogEpisode, CatalogMovie, CatalogShow } from "../types/catalog";
 
 export interface ShowVideoCandidate {
@@ -66,6 +69,23 @@ function movieIdentity(title: string): string {
   return normalizeStoryIdentity(title.replace(FULL_MOVIE_MARKER, " "));
 }
 
+function resolveShowCategories(identity: string, searchableTitle: string, categoryOverrides: ShowCategoryOverrides): string[] {
+  const overridden = categoryOverrides[identity] ?? [];
+  const knownCategoryIds = new Set(CATEGORY_RULES.map((rule) => rule.id));
+  const invalid = overridden.filter((categoryId) => !knownCategoryIds.has(categoryId) || categoryId === OTHER_CATEGORY_ID || categoryId === OTHER_SHOWS_CATEGORY_ID);
+  if (invalid.length) throw new Error(`Unknown or fallback show category override(s) for "${identity}": ${invalid.join(", ")}.`);
+
+  const selected = new Set([
+    ...classifyShow({ title: searchableTitle }).filter((categoryId) => categoryId !== OTHER_SHOWS_CATEGORY_ID),
+    ...overridden,
+  ]);
+  const categories = CATEGORY_RULES
+    .filter((rule) => selected.has(rule.id))
+    .sort((left, right) => left.priority - right.priority)
+    .map((rule) => rule.id);
+  return categories.length ? categories : [OTHER_SHOWS_CATEGORY_ID];
+}
+
 function tokenSimilarity(a: string, b: string): number {
   const left = new Set(a.split(" "));
   const right = new Set(b.split(" "));
@@ -87,7 +107,7 @@ function editSimilarity(a: string, b: string): number {
   return 1 - previous[b.length] / Math.max(a.length, b.length, 1);
 }
 
-export function aggregateShows(candidates: ShowVideoCandidate[], movies: CatalogMovie[], aliases: ShowIdentityAliases = {}): ShowCatalogReport {
+export function aggregateShows(candidates: ShowVideoCandidate[], movies: CatalogMovie[], aliases: ShowIdentityAliases = {}, categoryOverrides: ShowCategoryOverrides = SHOW_CATEGORY_OVERRIDES): ShowCatalogReport {
   const warnings: string[] = [];
   const groups = new Map<string, ReturnType<typeof parseCandidate>[]>();
   for (const candidate of candidates.filter((item) => isShowCandidateTitle(item.title))) {
@@ -121,7 +141,7 @@ export function aggregateShows(candidates: ShowVideoCandidate[], movies: Catalog
       description: first.candidate.description,
       latestPublishedAt,
       thumbnails: first.candidate.thumbnails,
-      categories: classifyShow({ title: `${first.baseTitle} ${episodes.map((episode) => episode.title).join(" ")}` }),
+      categories: resolveShowCategories(identity, `${first.baseTitle} ${episodes.map((episode) => episode.title).join(" ")}`, categoryOverrides),
       seasonNumber: 1,
       episodes,
     };

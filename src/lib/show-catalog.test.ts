@@ -84,4 +84,16 @@ describe("show catalog aggregation", () => {
     expect(irregular.warnings.join(" ")).toMatch(/missing episode 2/i);
     expect(irregular.warnings.join(" ")).toMatch(/duplicate episode number.*3/i);
   });
+
+  it("uses explicit category overrides for generic and cross-franchise show identities", () => {
+    const result = aggregateShows([
+      video("everyone001", "What If EVERYONE Were Reborn With Their Memories?", "2026-01-01T00:00:00Z"),
+      video("village0001", "What If The Village Got Their Wish?", "2026-01-02T00:00:00Z"),
+      video("worlds00001", "What If Anime Worlds Collided?", "2026-01-03T00:00:00Z"),
+    ], []);
+
+    expect(result.shows.find((show) => show.title.includes("EVERYONE"))?.categories).toEqual(["naruto"]);
+    expect(result.shows.find((show) => show.title.includes("Village"))?.categories).toEqual(["naruto"]);
+    expect(result.shows.find((show) => show.title.includes("Anime Worlds"))?.categories).toEqual(["naruto", "one-piece", "dragon-ball"]);
+  });
 });

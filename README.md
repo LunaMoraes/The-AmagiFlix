@@ -41,7 +41,7 @@ npm run test:e2e
 
 The generator resolves `@TheAmagiYT`, walks the uploads playlist, and fetches videos in batches. Existing `Full Movie` handling remains unchanged. Separate non-movie titles beginning with `What If` are grouped into Season 1 shows by their trailing Part/Episode/Final markers. A title without an episode marker becomes a one-episode show and absorbs later continuations. When a matching Full Movie exists, that show is suppressed while every Full Movie remains visible. The generator reports created, suppressed, ambiguous, irregular, and uncategorized shows before atomically writing `public/data/catalog.json`. API or transformation failures stop the build rather than deploying a partial catalog.
 
-Rare spelling differences can be handled explicitly in `src/config/show-aliases.ts`. Broad fuzzy matches are reported for review but never suppress a show automatically.
+Rare spelling differences can be handled explicitly in `src/config/show-aliases.ts`. Broad fuzzy matches are reported for review but never suppress a show automatically. Franchise classification uses only show and episode titles; generic titles that cannot be matched safely use normalized identities in `src/config/show-category-overrides.ts`.
 
 ## GitHub Pages deployment
 
