@@ -98,6 +98,8 @@ test("measured extension progress renders a real progress bar", async ({ page })
 
 test("shows appear once with a Season 1 episode list and canonical playback", async ({ page }) => {
   await page.goto("/");
+  const sourceChannelId = await page.evaluate(async () => (await (await fetch("./data/catalog.json")).json()).sourceChannelId as string);
+  expect(sourceChannelId).toBe("e2e-fixture");
   const show = page.getByRole("button", { name: "More information about What If Naruto Left Konoha" }).first();
   await expect(show.getByText("Series")).toBeVisible();
   await show.click();

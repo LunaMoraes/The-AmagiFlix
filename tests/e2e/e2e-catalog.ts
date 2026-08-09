@@ -1,0 +1,53 @@
+import type { CatalogFile } from "../../src/types/catalog";
+
+export const e2eCatalog = {
+  schemaVersion: 1,
+  generatedAt: "2026-08-09T00:00:00.000Z",
+  sourceChannelId: "e2e-fixture",
+  movieCount: 1,
+  movies: [
+    {
+      videoId: "e2eMovie001",
+      title: "Naruto's Complete Journey (Full Movie)",
+      description: "A deterministic full movie used by the browser acceptance suite.",
+      publishedAt: "2026-08-01T14:00:00.000Z",
+      durationSeconds: 7_200,
+      thumbnails: {},
+      categories: ["naruto"],
+    },
+  ],
+  showCount: 1,
+  shows: [
+    {
+      showId: "show-what-if-naruto-left-konoha-demo0001",
+      title: "What If Naruto Left Konoha",
+      description: "Naruto leaves the village and faces an unfamiliar future.",
+      latestPublishedAt: "2026-08-03T14:00:00.000Z",
+      thumbnails: {},
+      categories: ["naruto"],
+      seasonNumber: 1,
+      episodes: [
+        {
+          videoId: "sNarutoE001",
+          title: "What If Naruto Left Konoha Part 1",
+          description: "Naruto begins a different journey beyond the Hidden Leaf.",
+          publishedAt: "2026-08-02T14:00:00.000Z",
+          durationSeconds: 1_800,
+          thumbnails: {},
+          episodeNumber: 1,
+          episodeLabel: "Episode 1",
+        },
+        {
+          videoId: "sNarutoE002",
+          title: "What If Naruto Left Konoha Final",
+          description: "The story reaches its conclusion.",
+          publishedAt: "2026-08-03T14:00:00.000Z",
+          durationSeconds: 1_900,
+          thumbnails: {},
+          episodeNumber: 2,
+          episodeLabel: "Final",
+        },
+      ],
+    },
+  ],
+} satisfies CatalogFile;
