@@ -128,12 +128,13 @@ describe("App", () => {
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).shows["show-naruto-left"].inMyList).toBe(true);
   });
 
-  it("searches episode copy as one show and places Recommended before Recently Added", async () => {
+  it("searches episode copy as one show and places Recommended directly before Naruto & Boruto", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
     const { unmount } = renderApp();
     const recommended = await screen.findByRole("heading", { name: "Recommended" });
-    const recentlyAdded = screen.getByRole("heading", { name: "Recently Added Full Movies" });
-    expect(recommended.compareDocumentPosition(recentlyAdded) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const naruto = screen.getByRole("heading", { name: "Naruto & Boruto" });
+    expect(recommended.compareDocumentPosition(naruto) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Recently Added Full Movies" })).not.toBeInTheDocument();
     unmount();
     renderApp("/search?q=Sasuke");
     expect((await screen.findAllByRole("button", { name: "More information about What If Naruto Left Konoha" }))).toHaveLength(1);

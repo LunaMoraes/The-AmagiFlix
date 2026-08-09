@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 test("browses the catalog and opens accessible movie details", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
-  const recent = page.getByRole("region", { name: "Recently Added Full Movies" });
-  await recent.getByRole("button", { name: /^More information about/ }).first().click();
+  const naruto = page.getByRole("region", { name: "Naruto & Boruto" });
+  await naruto.getByRole("button", { name: /^More information about/ }).first().click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link", { name: "Watch on YouTube" })).toHaveAttribute("href", /youtube\.com\/watch\?v=[^&]+/);
@@ -125,10 +125,11 @@ test("shows appear once with a Season 1 episode list and canonical playback", as
 test("Movies & Shows and Recommended expose mixed titles in the agreed order", async ({ page }) => {
   await page.goto("/");
   const recommended = page.getByRole("region", { name: "Recommended" });
-  const recentlyAdded = page.getByRole("region", { name: "Recently Added Full Movies" });
+  const naruto = page.getByRole("region", { name: "Naruto & Boruto" });
   await expect(recommended).toBeVisible();
-  const [recommendedBox, recentlyAddedBox] = await Promise.all([recommended.boundingBox(), recentlyAdded.boundingBox()]);
-  expect(recommendedBox!.y).toBeLessThan(recentlyAddedBox!.y);
+  await expect(page.getByRole("region", { name: "Recently Added Full Movies" })).toHaveCount(0);
+  const [recommendedBox, narutoBox] = await Promise.all([recommended.boundingBox(), naruto.boundingBox()]);
+  expect(recommendedBox!.y).toBeLessThan(narutoBox!.y);
   await page.goto("/#/movies");
   await expect(page.getByRole("heading", { name: "Movies & Shows" })).toBeVisible();
   await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeVisible();
