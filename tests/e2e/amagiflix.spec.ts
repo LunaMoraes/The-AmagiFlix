@@ -48,9 +48,10 @@ test("profile menu persists the name and exposes planned settings", async ({ pag
   const wordmarkBefore = await wordmark.boundingBox();
   await page.getByRole("button", { name: "Open account menu" }).click();
   const panel = page.getByRole("dialog", { name: "Account menu" });
+  await expect(panel).toHaveCSS("transform", "none");
   const [wordmarkAfter, panelBox] = await Promise.all([wordmark.boundingBox(), panel.boundingBox()]);
   expect(wordmarkAfter?.x).toBe(wordmarkBefore?.x);
-  expect(panelBox?.x).toBe(page.viewportSize()!.width - panelBox!.width);
+  expect(panelBox!.x + panelBox!.width).toBe(page.viewportSize()!.width);
   expect(panelBox?.y).toBe(0);
   await page.getByRole("button", { name: /Profile Guest/ }).click();
   await page.getByRole("textbox", { name: "Display name" }).fill("Luna");
