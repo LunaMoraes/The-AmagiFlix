@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("browses the catalog and opens accessible movie details", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
-  const naruto = page.getByRole("region", { name: "Naruto & Boruto - Full Movie" });
+  const naruto = page.getByRole("region", { name: "Naruto & Boruto" });
   await naruto.getByRole("button", { name: /^More information about/ }).first().click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
@@ -125,7 +125,7 @@ test("shows appear once with a Season 1 episode list and canonical playback", as
 test("Movies & Shows and Recommended expose mixed titles in the agreed order", async ({ page }) => {
   await page.goto("/");
   const recommended = page.getByRole("region", { name: "Recommended" });
-  const naruto = page.getByRole("region", { name: "Naruto & Boruto - Full Movie" });
+  const naruto = page.getByRole("region", { name: "Naruto & Boruto" });
   await expect(recommended).toBeVisible();
   await expect(page.getByRole("region", { name: "Recently Added Full Movies" })).toHaveCount(0);
   const [recommendedBox, narutoBox] = await Promise.all([recommended.boundingBox(), naruto.boundingBox()]);

@@ -8,16 +8,20 @@ import { isShow, titleId } from "../lib/titles";
 import { MovieCard } from "./MovieCard";
 import styles from "../styles/app.module.css";
 
-export function MovieShelf({ title, titles }: { title: string; titles: CatalogTitle[] }) {
+export function MovieShelf({ title, titles, headingLevel = "h2", id }: { title: string; titles: CatalogTitle[]; headingLevel?: "h2" | "h3"; id?: string }) {
   const rail = useRef<HTMLDivElement>(null);
   const { library } = useLibrary();
   const { openMovie, openShow } = useMovieDetails();
   const scroll = (direction: number) => rail.current?.scrollBy({ left: direction * rail.current.clientWidth * 0.82, behavior: "smooth" });
 
   if (!titles.length) return null;
+  const headingId = id ?? `shelf-${title.replace(/\W+/g, "-")}`;
+  const isSub = headingLevel === "h3";
+  const Container = isSub ? "div" : "section";
+
   return (
-    <section className={styles.shelf} aria-labelledby={`shelf-${title.replace(/\W+/g, "-")}`}>
-      <h2 id={`shelf-${title.replace(/\W+/g, "-")}`}>{title}</h2>
+    <Container className={`${styles.shelf} ${isSub ? styles.subShelf : ""}`} {...(isSub ? {} : { "aria-labelledby": headingId })}>
+      {isSub ? <h3 id={headingId}>{title}</h3> : <h2 id={headingId}>{title}</h2>}
       <div className={styles.shelfWrap}>
         <button className={`${styles.shelfArrow} ${styles.shelfArrowLeft}`} onClick={() => scroll(-1)} aria-label={`Scroll ${title} left`}><ChevronLeft /></button>
         <div className={styles.shelfRail} ref={rail}>
@@ -25,6 +29,6 @@ export function MovieShelf({ title, titles }: { title: string; titles: CatalogTi
         </div>
         <button className={`${styles.shelfArrow} ${styles.shelfArrowRight}`} onClick={() => scroll(1)} aria-label={`Scroll ${title} right`}><ChevronRight /></button>
       </div>
-    </section>
+    </Container>
   );
 }

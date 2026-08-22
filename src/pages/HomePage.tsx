@@ -28,18 +28,38 @@ export function HomePage({ movies, shows, recommendationOrder }: { movies: Catal
         <MovieShelf title="Continue Watching" titles={continueWatching} />
         <MovieShelf title="My List" titles={myList} />
         <MovieShelf title="Recommended" titles={recommended} />
-        {CATEGORY_RULES.filter((category) => ![OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID].includes(category.id)).flatMap((category) => {
+        {CATEGORY_RULES.filter((category) => ![OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID].includes(category.id)).map((category) => {
           const categoryTitles = titles.filter((item) => item.categories.includes(category.id));
+          if (!categoryTitles.length) return null;
+
           if (category.subcategories && category.subcategories.length > 0) {
-            return category.subcategories.map((sub) => (
-              <MovieShelf
-                key={`${category.id}-${sub.id}`}
-                title={`${category.label} - ${sub.label}`}
-                titles={filterTitlesBySubcategory(categoryTitles, sub.id)}
-              />
-            ));
+            const subShelves = category.subcategories
+              .map((sub) => {
+                const subTitles = filterTitlesBySubcategory(categoryTitles, sub.id);
+                if (!subTitles.length) return null;
+                return (
+                  <MovieShelf
+                    key={`${category.id}-${sub.id}`}
+                    id={`shelf-${category.id}-${sub.id}`}
+                    title={sub.label}
+                    titles={subTitles}
+                    headingLevel="h3"
+                  />
+                );
+              })
+              .filter(Boolean);
+
+            if (!subShelves.length) return null;
+
+            return (
+              <section key={category.id} className={styles.categoryGroup} aria-labelledby={`category-heading-${category.id}`}>
+                <h2 id={`category-heading-${category.id}`} className={styles.categoryGroupTitle}>{category.label}</h2>
+                {subShelves}
+              </section>
+            );
           }
-          return [<MovieShelf key={category.id} title={category.label} titles={categoryTitles} />];
+
+          return <MovieShelf key={category.id} title={category.label} titles={categoryTitles} />;
         })}
         <MovieShelf title="Uncategorized Full Movies" titles={movies.filter((movie) => movie.categories.includes(OTHER_CATEGORY_ID))} />
         <MovieShelf title="Uncategorized Shows" titles={shows.filter((show) => show.categories.includes(OTHER_SHOWS_CATEGORY_ID))} />

@@ -118,6 +118,10 @@
 .historyImportIcon svg { width: 23px; }
 .shelf { margin: 0 0 clamp(1.6rem, 3.2vw, 3.3rem); }
 .shelf h2 { margin: 0 var(--page-gutter) .65rem; font-size: clamp(1.15rem, 1.7vw, 1.55rem); line-height: 1.2; letter-spacing: -.02em; }
+.shelf h3 { margin: 0 var(--page-gutter) .45rem; font-size: clamp(.95rem, 1.3vw, 1.15rem); line-height: 1.2; letter-spacing: -.01em; color: #c5c5c5; font-weight: 650; }
+.subShelf { margin: 0 0 clamp(1rem, 2vw, 1.8rem); }
+.categoryGroup { margin: 0 0 clamp(2rem, 3.6vw, 3.8rem); }
+.categoryGroupTitle { margin: 0 var(--page-gutter) .95rem; font-size: clamp(1.35rem, 2.1vw, 1.85rem); line-height: 1.2; letter-spacing: -.03em; color: #fff; font-weight: 850; }
 .shelfWrap { position: relative; }
 .shelfRail { display: grid; grid-auto-flow: column; grid-auto-columns: clamp(215px, 18vw, 310px); gap: clamp(.35rem, .5vw, .55rem); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: 0 var(--page-gutter) 1.4rem; scroll-padding-inline: var(--page-gutter); }
 .shelfRail::-webkit-scrollbar { display: none; }

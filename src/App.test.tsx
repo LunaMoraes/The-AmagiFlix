@@ -132,11 +132,11 @@ describe("App", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
     const { unmount } = renderApp();
     const recommended = await screen.findByRole("heading", { name: "Recommended" });
-    const narutoMovieShelf = screen.getByRole("heading", { name: "Naruto & Boruto - Full Movie" });
-    const narutoSeriesShelf = screen.getByRole("heading", { name: "Naruto & Boruto - Series" });
-    expect(recommended.compareDocumentPosition(narutoMovieShelf) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(narutoSeriesShelf).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: /^Naruto & Boruto$/ })).not.toBeInTheDocument();
+    const narutoGroup = screen.getByRole("heading", { level: 2, name: "Naruto & Boruto" });
+    expect(recommended.compareDocumentPosition(narutoGroup) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 3, name: "Full Movie" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Series" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { level: 3, name: "One-shot" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Recently Added Full Movies" })).not.toBeInTheDocument();
     unmount();
     renderApp("/search?q=Sasuke");
