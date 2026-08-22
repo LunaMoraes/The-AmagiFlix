@@ -1,6 +1,6 @@
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { AMAGI_CHANNEL_HANDLE } from "../src/config/app";
+import { CHANNELS, type ChannelConfig } from "../src/config/channels";
 import { classifyMovie, isFullMovieTitle } from "../src/lib/category-engine";
 import { SHOW_IDENTITY_ALIASES } from "../src/config/show-aliases";
 import { parseIsoDuration } from "../src/lib/duration";
@@ -35,15 +35,15 @@ async function youtubeRequest<T>(method: string, params: Record<string, string>)
   return (await response.json()) as T;
 }
 
-async function resolveChannel(): Promise<{ channelId: string; uploadsPlaylistId: string }> {
+async function resolveChannel(handle: string): Promise<{ channelId: string; uploadsPlaylistId: string }> {
   const response = await youtubeRequest<{
     items?: Array<{ id?: string; contentDetails?: { relatedPlaylists?: { uploads?: string } } }>;
-  }>("channels", { part: "contentDetails", forHandle: AMAGI_CHANNEL_HANDLE });
+  }>("channels", { part: "contentDetails", forHandle: handle });
   const item = response.items?.[0];
   const channelId = item?.id;
   const uploadsPlaylistId = item?.contentDetails?.relatedPlaylists?.uploads;
   if (!channelId || !uploadsPlaylistId || response.items?.length !== 1) {
-    throw new Error(`Could not resolve one uploads playlist for ${AMAGI_CHANNEL_HANDLE}.`);
+    throw new Error(`Could not resolve one uploads playlist for ${handle}.`);
   }
   return { channelId, uploadsPlaylistId };
 }
@@ -97,7 +97,7 @@ async function getVideos(ids: string[]): Promise<YouTubeVideo[]> {
   return videos;
 }
 
-function normalizeMovie(video: YouTubeVideo, channelId: string): CatalogMovie | null {
+function normalizeMovie(video: YouTubeVideo, channelId: string, channel: ChannelConfig): CatalogMovie | null {
   const { snippet, contentDetails } = video;
   if (!video.id || !snippet?.title || !snippet.publishedAt || snippet.channelId !== channelId || !isFullMovieTitle(snippet.title)) return null;
   const thumbnails = snippet.thumbnails ?? {};
@@ -115,10 +115,13 @@ function normalizeMovie(video: YouTubeVideo, channelId: string): CatalogMovie | 
       maxres: thumbnails.maxres?.url,
     },
     categories: classifyMovie({ title: snippet.title }),
+    channelHandle: channel.handle,
+    channelName: channel.name,
+    isExtended: !channel.isPrimary,
   };
 }
 
-function normalizeShowCandidate(video: YouTubeVideo, channelId: string): ShowVideoCandidate | null {
+function normalizeShowCandidate(video: YouTubeVideo, channelId: string, channel: ChannelConfig): (ShowVideoCandidate & { channelHandle?: string; channelName?: string; isExtended?: boolean }) | null {
   const { snippet, contentDetails } = video;
   if (!video.id || !snippet?.title || !snippet.publishedAt || snippet.channelId !== channelId || !isShowCandidateTitle(snippet.title)) return null;
   const thumbnails = snippet.thumbnails ?? {};
@@ -135,21 +138,45 @@ function normalizeShowCandidate(video: YouTubeVideo, channelId: string): ShowVid
       standard: thumbnails.standard?.url,
       maxres: thumbnails.maxres?.url,
     },
+    channelHandle: channel.handle,
+    channelName: channel.name,
+    isExtended: !channel.isPrimary,
   };
 }
 
 async function main(): Promise<void> {
-  const { channelId, uploadsPlaylistId } = await resolveChannel();
-  const uploadIds = await getUploadIds(uploadsPlaylistId);
-  const rawVideos = await getVideos(uploadIds);
-  const movies = rawVideos
-    .map((video) => normalizeMovie(video, channelId))
-    .filter((movie): movie is CatalogMovie => movie !== null)
-    .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
-  const showCandidates = rawVideos
-    .map((video) => normalizeShowCandidate(video, channelId))
-    .filter((candidate): candidate is ShowVideoCandidate => candidate !== null);
-  const showCatalog = aggregateShows(showCandidates, movies, SHOW_IDENTITY_ALIASES);
+  const allMovies: CatalogMovie[] = [];
+  const allShowCandidates: ShowVideoCandidate[] = [];
+  let primaryChannelId = "";
+
+  for (const channel of CHANNELS) {
+    try {
+      console.log(`Resolving channel: ${channel.name} (${channel.handle})...`);
+      const { channelId, uploadsPlaylistId } = await resolveChannel(channel.handle);
+      if (channel.isPrimary) primaryChannelId = channelId;
+
+      const uploadIds = await getUploadIds(uploadsPlaylistId);
+      const rawVideos = await getVideos(uploadIds);
+
+      const channelMovies = rawVideos
+        .map((video) => normalizeMovie(video, channelId, channel))
+        .filter((movie): movie is CatalogMovie => movie !== null);
+
+      const channelShowCandidates = rawVideos
+        .map((video) => normalizeShowCandidate(video, channelId, channel))
+        .filter((candidate): candidate is ShowVideoCandidate => candidate !== null);
+
+      allMovies.push(...channelMovies);
+      allShowCandidates.push(...channelShowCandidates);
+      console.log(`Fetched ${channelMovies.length} movies and ${channelShowCandidates.length} show candidates from ${channel.name}.`);
+    } catch (error) {
+      if (channel.isPrimary) throw error;
+      console.warn(`Failed to fetch extended channel ${channel.handle}:`, error);
+    }
+  }
+
+  const movies = allMovies.sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  const showCatalog = aggregateShows(allShowCandidates, movies, SHOW_IDENTITY_ALIASES);
 
   if (!movies.length) throw new Error("No eligible Full Movie videos were found; refusing to publish an empty catalog.");
 
@@ -172,7 +199,7 @@ async function main(): Promise<void> {
   const catalog: CatalogFile = {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
-    sourceChannelId: channelId,
+    sourceChannelId: primaryChannelId || "multi-channel",
     movieCount: movies.length,
     movies,
     showCount: showCatalog.shows.length,
@@ -186,7 +213,7 @@ async function main(): Promise<void> {
   await mkdir(dirname(destination), { recursive: true });
   await writeFile(temporary, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
   await rename(temporary, destination);
-  console.log(`Generated ${movies.length} movies and ${showCatalog.shows.length} shows from channel ${channelId}.`);
+  console.log(`Generated ${movies.length} movies and ${showCatalog.shows.length} shows across configured channels.`);
 }
 
 await main();

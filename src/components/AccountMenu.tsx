@@ -6,6 +6,7 @@ import { useExtensionBridge } from "../context/ExtensionBridgeContext";
 import { useHistoryImport } from "../context/HistoryImportContext";
 import { useLibrary } from "../context/LibraryContext";
 import { EXTENSION_DOWNLOAD_PATH } from "../config/app";
+import { ExtendedExperienceToggle } from "./ExtendedExperienceToggle";
 import styles from "../styles/app.module.css";
 
 type MenuView = "menu" | "profile" | "extension" | "settings";
@@ -89,6 +90,9 @@ export function AccountMenu() {
                 <Settings aria-hidden="true" />
                 <span><strong>Settings</strong><small>Preferences and data</small></span>
               </button>
+              <div style={{ padding: ".65rem .7rem", borderTop: "1px solid #282828", marginTop: ".4rem" }}>
+                <ExtendedExperienceToggle />
+              </div>
             </div>
           )}
 

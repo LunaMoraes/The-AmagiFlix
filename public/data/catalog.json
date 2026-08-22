@@ -111,9 +111,21 @@
       "durationSeconds": 7400,
       "thumbnails": {},
       "categories": ["other-full-movies"]
+    },
+    {
+      "videoId": "dVader00001X",
+      "title": "What If Darth Vader Overthrew The Emperor? (Full Movie)",
+      "description": "An alternate Star Wars saga exploring the reign of Emperor Vader after defeating Darth Sidious.",
+      "publishedAt": "2026-08-08T14:00:00Z",
+      "durationSeconds": 9800,
+      "thumbnails": {},
+      "categories": ["star-wars"],
+      "channelHandle": "@vadersorder",
+      "channelName": "Vader's Order",
+      "isExtended": true
     }
   ],
-  "showCount": 3,
+  "showCount": 4,
   "shows": [
     {
       "showId": "show-what-if-naruto-left-konoha-demo0001",
@@ -153,6 +165,46 @@
           "thumbnails": {},
           "episodeNumber": 3,
           "episodeLabel": "Final"
+        }
+      ]
+    },
+    {
+      "showId": "show-what-if-anakin-left-the-jedi-order-vader0001",
+      "title": "What If Anakin Left The Jedi Order",
+      "description": "An alternate timeline where Anakin Skywalker walks away from the Jedi Order before his fall to the dark side.",
+      "latestPublishedAt": "2026-08-07T14:00:00Z",
+      "thumbnails": {},
+      "categories": ["star-wars"],
+      "seasonNumber": 1,
+      "channelHandle": "@vadersorder",
+      "channelName": "Vader's Order",
+      "isExtended": true,
+      "episodes": [
+        {
+          "videoId": "sVaderE001",
+          "title": "What If Anakin Left The Jedi Order Part 1",
+          "description": "Anakin makes his fateful decision to walk away.",
+          "publishedAt": "2026-08-01T14:00:00Z",
+          "durationSeconds": 1540,
+          "thumbnails": {},
+          "episodeNumber": 1,
+          "episodeLabel": "Episode 1",
+          "channelHandle": "@vadersorder",
+          "channelName": "Vader's Order",
+          "isExtended": true
+        },
+        {
+          "videoId": "sVaderE002",
+          "title": "What If Anakin Left The Jedi Order Final",
+          "description": "The galaxy reckons with a changed destiny.",
+          "publishedAt": "2026-08-07T14:00:00Z",
+          "durationSeconds": 1680,
+          "thumbnails": {},
+          "episodeNumber": 2,
+          "episodeLabel": "Final",
+          "channelHandle": "@vadersorder",
+          "channelName": "Vader's Order",
+          "isExtended": true
         }
       ]
     },

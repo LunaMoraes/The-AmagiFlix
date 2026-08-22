@@ -134,5 +134,31 @@ test("Movies & Shows and Recommended expose mixed titles in the agreed order", a
   await expect(page.getByRole("heading", { name: "Movies & Shows" })).toBeVisible();
   await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeVisible();
   await page.goto("/#/search?q=conclusion");
-  await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "More information about What If Naruto Left Konoha" })) .toHaveCount(1);
+});
+
+test("toggling Extended Experience reveals extended channels content", async ({ page, isMobile }) => {
+  await page.goto("/#/movies");
+  await expect(page.getByRole("button", { name: "More information about Naruto's Complete Journey (Full Movie)" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "More information about What If Darth Vader Overthrew The Emperor? (Full Movie)" })).toHaveCount(0);
+
+  // Toggle on Extended Experience
+  if (isMobile) {
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("dialog", { name: "Account menu" }).getByRole("switch", { name: "Toggle Extended Experience" }).click();
+    await page.getByRole("button", { name: "Close account menu" }).click();
+  } else {
+    await page.getByRole("navigation", { name: "Main navigation" }).getByRole("switch", { name: "Toggle Extended Experience" }).click();
+  }
+  await expect(page.getByRole("button", { name: "More information about What If Darth Vader Overthrew The Emperor? (Full Movie)" })).toBeVisible();
+
+  // Toggle off
+  if (isMobile) {
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("dialog", { name: "Account menu" }).getByRole("switch", { name: "Toggle Extended Experience" }).click();
+    await page.getByRole("button", { name: "Close account menu" }).click();
+  } else {
+    await page.getByRole("navigation", { name: "Main navigation" }).getByRole("switch", { name: "Toggle Extended Experience" }).click();
+  }
+  await expect(page.getByRole("button", { name: "More information about What If Darth Vader Overthrew The Emperor? (Full Movie)" })).toHaveCount(0);
 });

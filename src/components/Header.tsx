@@ -4,6 +4,8 @@ import { NavLink, useLocation, useNavigate, useSearchParams } from "react-router
 import styles from "../styles/app.module.css";
 import { AccountMenu } from "./AccountMenu";
 
+import { ExtendedExperienceToggle } from "./ExtendedExperienceToggle";
+
 const navClass = ({ isActive }: { isActive: boolean }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`;
 
 export function Header() {
@@ -42,6 +44,7 @@ export function Header() {
           <NavLink to="/" end className={navClass}>Home</NavLink>
           <NavLink to="/movies" className={navClass}>Movies &amp; Shows</NavLink>
           <NavLink to="/my-list" className={navClass}>My List</NavLink>
+          <ExtendedExperienceToggle />
         </nav>
         <form className={`${styles.headerSearch} ${searchOpen ? styles.headerSearchOpen : ""}`} onSubmit={submitSearch} role="search">
           <button type="button" aria-label="Open search" onClick={() => { setSearchOpen(true); navigate("/search"); }}>

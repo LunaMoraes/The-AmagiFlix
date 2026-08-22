@@ -24,6 +24,9 @@ export interface CatalogMovie {
   durationSeconds: number | null;
   thumbnails: CatalogArtwork;
   categories: string[];
+  channelHandle?: string;
+  channelName?: string;
+  isExtended?: boolean;
 }
 
 export interface CatalogEpisode {
@@ -35,6 +38,9 @@ export interface CatalogEpisode {
   thumbnails: CatalogArtwork;
   episodeNumber: number;
   episodeLabel: string;
+  channelHandle?: string;
+  channelName?: string;
+  isExtended?: boolean;
 }
 
 export interface CatalogShow {
@@ -46,6 +52,9 @@ export interface CatalogShow {
   categories: string[];
   seasonNumber: 1;
   episodes: CatalogEpisode[];
+  channelHandle?: string;
+  channelName?: string;
+  isExtended?: boolean;
 }
 
 export type CatalogTitle = CatalogMovie | CatalogShow;

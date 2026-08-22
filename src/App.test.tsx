@@ -5,16 +5,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { LibraryProvider } from "./context/LibraryContext";
 import { ProfileProvider } from "./context/ProfileContext";
-import { PROFILE_STORAGE_KEY, STORAGE_KEY } from "./config/app";
 import { ExtensionBridgeProvider } from "./context/ExtensionBridgeContext";
 import { HistoryImportProvider } from "./context/HistoryImportContext";
+import { ExtendedExperienceProvider } from "./context/ExtendedExperienceContext";
+import { EXTENDED_EXPERIENCE_STORAGE_KEY, PROFILE_STORAGE_KEY, STORAGE_KEY } from "./config/app";
 
 const catalog = {
   schemaVersion: 1,
   generatedAt: "2026-01-01T00:00:00Z",
   sourceChannelId: "test",
-  movieCount: 1,
-  movies: [{ videoId: "abcDEF12345", title: "Naruto Full Movie", description: "A complete hero story.", publishedAt: "2026-01-01T00:00:00Z", durationSeconds: 7200, thumbnails: {}, categories: ["naruto"] }],
+  movieCount: 2,
+  movies: [
+    { videoId: "abcDEF12345", title: "Naruto Full Movie", description: "A complete hero story.", publishedAt: "2026-01-01T00:00:00Z", durationSeconds: 7200, thumbnails: {}, categories: ["naruto"] },
+    { videoId: "vaderMovie01", title: "Vader Full Movie", description: "A dark side story.", publishedAt: "2026-01-02T00:00:00Z", durationSeconds: 6000, thumbnails: {}, categories: ["star-wars"], isExtended: true, channelHandle: "@vadersorder", channelName: "Vader's Order" },
+  ],
 };
 const catalogWithShow = {
   ...catalog,
@@ -34,7 +38,7 @@ const catalogWithShow = {
   }],
 };
 
-const renderApp = (entry = "/") => render(<MemoryRouter initialEntries={[entry]}><ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><LibraryProvider><App /></LibraryProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider></MemoryRouter>);
+const renderApp = (entry = "/") => render(<MemoryRouter initialEntries={[entry]}><ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><ExtendedExperienceProvider><LibraryProvider><App /></LibraryProvider></ExtendedExperienceProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider></MemoryRouter>);
 
 afterEach(() => vi.restoreAllMocks());
 beforeEach(() => localStorage.clear());
@@ -176,5 +180,26 @@ describe("App", () => {
     expect(within(carousel).getByRole("heading", { name: "What If Naruto Left Konoha" })).toBeInTheDocument();
     expect(within(carousel).getByRole("link", { name: "Play Episode 1" })).toHaveAttribute("href", "https://www.youtube.com/watch?v=epNaruto001");
     expect(carousel.querySelector('[style*="newest-show.jpg"]')).not.toBeNull();
+  });
+
+  it("toggles Extended Experience to display and hide extended channel titles", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalog }));
+    const user = userEvent.setup();
+    renderApp("/movies");
+    
+    // By default, Extended Experience is off: only The Amagi content appears
+    expect(await screen.findByRole("button", { name: "More information about Naruto Full Movie" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "More information about Vader Full Movie" })).not.toBeInTheDocument();
+
+    // Toggle on Extended Experience
+    const toggle = screen.getByRole("switch", { name: "Toggle Extended Experience" });
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: "More information about Vader Full Movie" })).toBeInTheDocument();
+    expect(localStorage.getItem(EXTENDED_EXPERIENCE_STORAGE_KEY)).toBe("true");
+
+    // Toggle off
+    await user.click(toggle);
+    expect(screen.queryByRole("button", { name: "More information about Vader Full Movie" })).not.toBeInTheDocument();
+    expect(localStorage.getItem(EXTENDED_EXPERIENCE_STORAGE_KEY)).toBe("false");
   });
 });

@@ -56,6 +56,7 @@ export function MovieDetails({ movies }: { movies: CatalogMovie[] }) {
               <p className={styles.detailsDescription}>{movie.description || "No description is available for this movie."}</p>
             </div>
             <dl className={styles.detailsFacts}>
+              <div><dt>Channel:</dt><dd>{movie.channelName || "The Amagi"}</dd></div>
               <div><dt>Genres:</dt><dd>{movie.categories.map(getCategoryLabel).join(", ")}</dd></div>
               <div><dt>Playback:</dt><dd>YouTube</dd></div>
               {state.historyImport && <div><dt>History:</dt><dd>Imported{state.historyImport.lastKnownWatchedAt ? ` · ${new Date(state.historyImport.lastKnownWatchedAt).toLocaleDateString()}` : ""}</dd></div>}

@@ -4,7 +4,7 @@ export const e2eCatalog = {
   schemaVersion: 1,
   generatedAt: "2026-08-09T00:00:00.000Z",
   sourceChannelId: "e2e-fixture",
-  movieCount: 1,
+  movieCount: 2,
   movies: [
     {
       videoId: "e2eMovie001",
@@ -14,6 +14,18 @@ export const e2eCatalog = {
       durationSeconds: 7_200,
       thumbnails: {},
       categories: ["naruto"],
+    },
+    {
+      videoId: "e2eVaderMovie001",
+      title: "What If Darth Vader Overthrew The Emperor? (Full Movie)",
+      description: "A deterministic full movie from Vader's Order.",
+      publishedAt: "2026-08-05T14:00:00.000Z",
+      durationSeconds: 8_000,
+      thumbnails: {},
+      categories: ["star-wars"],
+      channelHandle: "@vadersorder",
+      channelName: "Vader's Order",
+      isExtended: true,
     },
   ],
   showCount: 1,

@@ -49,7 +49,7 @@ export function ShowDetails({ shows }: { shows: CatalogShow[] }) {
           </div>
           <div className={styles.showOverview}>
             <div><p className={styles.detailsMeta}><span>{new Date(show.latestPublishedAt).getFullYear()}</span><span>{show.episodes.length} episode{show.episodes.length === 1 ? "" : "s"}</span>{state.watched && <span className={styles.markedWatched}><Check /> Watched</span>}</p><p className={styles.detailsDescription}>{show.description || "No description is available for this show."}</p></div>
-            <dl className={styles.detailsFacts}><div><dt>Genres:</dt><dd>{show.categories.map(getCategoryLabel).join(", ")}</dd></div><div><dt>Playback:</dt><dd>YouTube</dd></div></dl>
+            <dl className={styles.detailsFacts}><div><dt>Channel:</dt><dd>{show.channelName || "The Amagi"}</dd></div><div><dt>Genres:</dt><dd>{show.categories.map(getCategoryLabel).join(", ")}</dd></div><div><dt>Playback:</dt><dd>YouTube</dd></div></dl>
           </div>
           <div className={styles.seasonHeading}><h3>Season {show.seasonNumber}</h3><span>{show.episodes.length} episode{show.episodes.length === 1 ? "" : "s"}</span></div>
           <ol className={styles.episodeList}>

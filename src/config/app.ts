@@ -6,5 +6,6 @@ export const HISTORY_IMPORT_KEY = "amagiflix.v2.historyImportCompleted";
 export const PROFILE_STORAGE_KEY = "amagiflix:profile:v1";
 export const OTHER_CATEGORY_ID = "other-full-movies";
 export const OTHER_SHOWS_CATEGORY_ID = "other-shows";
+export const EXTENDED_EXPERIENCE_STORAGE_KEY = "amagiflix:extended_experience:v1";
 export const EXTENSION_VERSION = "2.2.0";
 export const EXTENSION_DOWNLOAD_PATH = "downloads/amagiflix-companion.zip";
