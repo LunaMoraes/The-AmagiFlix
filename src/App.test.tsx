@@ -128,16 +128,39 @@ describe("App", () => {
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).shows["show-naruto-left"].inMyList).toBe(true);
   });
 
-  it("searches episode copy as one show and places Recommended directly before Naruto & Boruto", async () => {
+  it("searches episode copy as one show and places Recommended directly before Naruto subcategories", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
     const { unmount } = renderApp();
     const recommended = await screen.findByRole("heading", { name: "Recommended" });
-    const naruto = screen.getByRole("heading", { name: "Naruto & Boruto" });
-    expect(recommended.compareDocumentPosition(naruto) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const narutoMovieShelf = screen.getByRole("heading", { name: "Naruto & Boruto - Full Movie" });
+    const narutoSeriesShelf = screen.getByRole("heading", { name: "Naruto & Boruto - Series" });
+    expect(recommended.compareDocumentPosition(narutoMovieShelf) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(narutoSeriesShelf).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /^Naruto & Boruto$/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Recently Added Full Movies" })).not.toBeInTheDocument();
     unmount();
     renderApp("/search?q=Sasuke");
     expect((await screen.findAllByRole("button", { name: "More information about What If Naruto Left Konoha" }))).toHaveLength(1);
+  });
+
+  it("filters by subcategory on the Movies & Shows page", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
+    const user = userEvent.setup();
+    renderApp("/movies?category=naruto");
+    expect(await screen.findByRole("button", { name: "More information about Naruto Full Movie" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeInTheDocument();
+    
+    // Filter to Series subcategory
+    const seriesButton = screen.getByRole("button", { name: "Series" });
+    await user.click(seriesButton);
+    expect(screen.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "More information about Naruto Full Movie" })).not.toBeInTheDocument();
+
+    // Filter to Full Movie subcategory
+    const movieButton = screen.getByRole("button", { name: "Full Movie" });
+    await user.click(movieButton);
+    expect(screen.getByRole("button", { name: "More information about Naruto Full Movie" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "More information about What If Naruto Left Konoha" })).not.toBeInTheDocument();
   });
 
   it("starts on the brand slide and features the newest catalog title with its artwork", async () => {

@@ -1,10 +1,23 @@
 import { CATEGORY_RULES, type CategoryRule } from "../config/categories";
 import { OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID } from "../config/app";
 
-export const FULL_MOVIE_REGEX = /\bfull\s+movie\b/i;
+import type { SubcategoryId } from "../config/categories";
+import type { CatalogTitle } from "../types/catalog";
+import { isShow } from "./titles";
+
+export const FULL_MOVIE_REGEX = /\b(?:full\s+movie|compilation)\b/i;
 
 export function isFullMovieTitle(title: string): boolean {
   return FULL_MOVIE_REGEX.test(title);
+}
+
+export function getTitleSubcategory(title: CatalogTitle): SubcategoryId {
+  if (!isShow(title)) return "full-movie";
+  return title.episodes.length === 1 ? "one-shot" : "series";
+}
+
+export function filterTitlesBySubcategory(titles: CatalogTitle[], subcategoryId: SubcategoryId): CatalogTitle[] {
+  return titles.filter((title) => getTitleSubcategory(title) === subcategoryId);
 }
 
 export function classifyMovie(input: { title: string; description?: string; tags?: string[] }, rules: CategoryRule[] = CATEGORY_RULES): string[] {

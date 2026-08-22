@@ -113,7 +113,7 @@
       "categories": ["other-full-movies"]
     }
   ],
-  "showCount": 2,
+  "showCount": 3,
   "shows": [
     {
       "showId": "show-what-if-naruto-left-konoha-demo0001",
@@ -153,6 +153,27 @@
           "thumbnails": {},
           "episodeNumber": 3,
           "episodeLabel": "Final"
+        }
+      ]
+    },
+    {
+      "showId": "show-what-if-sasuke-never-left-demo0003",
+      "title": "What If Sasuke Never Left",
+      "description": "A one-shot alternate story exploring how the Hidden Leaf would have evolved if Sasuke never abandoned his comrades.",
+      "latestPublishedAt": "2026-07-15T14:00:00Z",
+      "thumbnails": {},
+      "categories": ["naruto"],
+      "seasonNumber": 1,
+      "episodes": [
+        {
+          "videoId": "sNarutoOneShot01",
+          "title": "What If Sasuke Never Left",
+          "description": "Sasuke chooses to stay in the Hidden Leaf.",
+          "publishedAt": "2026-07-15T14:00:00Z",
+          "durationSeconds": 1620,
+          "thumbnails": {},
+          "episodeNumber": 1,
+          "episodeLabel": "Episode 1"
         }
       ]
     },

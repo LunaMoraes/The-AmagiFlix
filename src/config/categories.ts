@@ -1,14 +1,28 @@
 import { OTHER_CATEGORY_ID, OTHER_SHOWS_CATEGORY_ID } from "./app";
 
+export type SubcategoryId = "full-movie" | "series" | "one-shot";
+
+export interface SubcategoryRule {
+  id: SubcategoryId;
+  label: string;
+}
+
+export const DEFAULT_SUBCATEGORIES: SubcategoryRule[] = [
+  { id: "full-movie", label: "Full Movie" },
+  { id: "series", label: "Series" },
+  { id: "one-shot", label: "One-shot" },
+];
+
 export interface CategoryRule {
   id: string;
   label: string;
   priority: number;
   patterns: RegExp[];
+  subcategories?: SubcategoryRule[];
 }
 
 export const CATEGORY_RULES: CategoryRule[] = [
-  { id: "naruto", label: "Naruto & Boruto", priority: 10, patterns: [/\bnaruto\b/i, /\bboruto\b/i, /\bsasuke\b/i, /\bitachi\b/i, /\bmadara\b/i, /\bkakashi\b/i, /\bakatsuki\b/i, /\bhokage\b/i, /\bminato\b/i, /\bkaguya\b/i, /\bsakura\b/i, /\bjiraiya\b/i, /\bhinata\b/i, /\bkurama\b/i, /\bkushina\b/i, /\buchiha\b/i, /\bshisui\b/i, /\bdanzo\b/i, /\bteam\s*7\b/i, /\bjinchuriki\b/i, /\bobito\b/i, /\byahiko\b/i, /\bhyuga\b/i, /\bkonoha\b/i, /\bhiruzen\b/i, /\borochimaru\b/i, /\bgaara\b/i, /\bsunagakure\b/i, /\bkimimaro\b/i, /\brin(?:\s+nohara)?\b/i, /\buzumaki\b/i, /\bkarura\b/i, /\bone[ -]?tails?\b/i, /\bnine[ -]?tails?\b/i, /\btailed beasts?\b/i, /\brock lee\b/i, /\bhashirama\b/i, /\bsenju\b/i, /\bsakumo(?:\s+hatake)?\b/i, /\bcurse of hatred\b/i, /\bneji\b/i, /\bhaku\b/i, /\bzabuza\b/i, /\bblack zetsu\b/i] },
+  { id: "naruto", label: "Naruto & Boruto", priority: 10, subcategories: DEFAULT_SUBCATEGORIES, patterns: [/\bnaruto\b/i, /\bboruto\b/i, /\bsasuke\b/i, /\bitachi\b/i, /\bmadara\b/i, /\bkakashi\b/i, /\bakatsuki\b/i, /\bhokage\b/i, /\bminato\b/i, /\bkaguya\b/i, /\bsakura\b/i, /\bjiraiya\b/i, /\bhinata\b/i, /\bkurama\b/i, /\bkushina\b/i, /\buchiha\b/i, /\bshisui\b/i, /\bdanzo\b/i, /\bteam\s*7\b/i, /\bjinchuriki\b/i, /\bobito\b/i, /\byahiko\b/i, /\bhyuga\b/i, /\bkonoha\b/i, /\bhiruzen\b/i, /\borochimaru\b/i, /\bgaara\b/i, /\bsunagakure\b/i, /\bkimimaro\b/i, /\brin(?:\s+nohara)?\b/i, /\buzumaki\b/i, /\bkarura\b/i, /\bone[ -]?tails?\b/i, /\bnine[ -]?tails?\b/i, /\btailed beasts?\b/i, /\brock lee\b/i, /\bhashirama\b/i, /\bsenju\b/i, /\bsakumo(?:\s+hatake)?\b/i, /\bcurse of hatred\b/i, /\bneji\b/i, /\bhaku\b/i, /\bzabuza\b/i, /\bblack zetsu\b/i] },
   { id: "avatar", label: "Avatar", priority: 20, patterns: [/\bavatar(?:\s*:\s*the last airbender)?\b/i, /\baang\b/i, /\bzuko\b/i, /\bazula\b/i, /\bkorra\b/i, /\broku\b/i, /\bsozin\b/i, /\biroh\b/i, /\bfire lord\b/i] },
   { id: "one-piece", label: "One Piece", priority: 30, patterns: [/\bone piece\b/i, /\bluffy\b/i, /\broronoa zoro\b/i, /\bstraw hats?\b/i] },
   { id: "dragon-ball", label: "Dragon Ball", priority: 40, patterns: [/\bdragon ball\b/i, /\bgoku\b/i, /\bvegeta\b/i, /\bfrieza\b/i, /\bgohan\b/i, /\buub\b/i, /\bsuper saiyan\b/i, /\btournament of power\b/i] },

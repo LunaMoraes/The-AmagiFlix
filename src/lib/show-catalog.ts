@@ -25,7 +25,7 @@ export type ShowIdentityAliases = Record<string, string>;
 
 const NUMBERED_SUFFIX = /\s*(?:[-–—:|]\s*)?[([\s]*(?:part|pt\.?|episode|ep\.?)\s*(\d+)\s*[)\]]?\s*$/i;
 const FINAL_SUFFIX = /\s*(?:[-–—:|]\s*)?[([\s]*(?:final(?:\s+part)?|finale)\s*[)\]]?\s*$/i;
-const FULL_MOVIE_MARKER = /\b(?:updated\s+)?full\s+movie\b/gi;
+const FULL_MOVIE_MARKER = /\b(?:(?:updated\s+)?full\s+movie|compilation)\b/gi;
 
 export function isShowCandidateTitle(title: string): boolean {
   return /^\s*what\s+if\b/i.test(title) && !isFullMovieTitle(title);

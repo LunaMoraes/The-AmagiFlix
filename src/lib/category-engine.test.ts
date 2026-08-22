@@ -1,10 +1,53 @@
 import { describe, expect, it } from "vitest";
 import { CATEGORY_RULES, getCategoryLabel } from "../config/categories";
-import { classifyMovie, classifyShow, isFullMovieTitle } from "./category-engine";
+import { classifyMovie, classifyShow, filterTitlesBySubcategory, getTitleSubcategory, isFullMovieTitle } from "./category-engine";
+import type { CatalogMovie, CatalogShow } from "../types/catalog";
 
 describe("Full Movie filtering", () => {
-  it.each(["What If X Happened? (Full Movie)", "FULL MOVIE - The Story", "A full   movie timeline"])("includes %s", (title) => expect(isFullMovieTitle(title)).toBe(true));
-  it.each(["Compilation", "Full Movies Ranked", "Part 1 - complete story"])("excludes %s", (title) => expect(isFullMovieTitle(title)).toBe(false));
+  it.each(["What If X Happened? (Full Movie)", "FULL MOVIE - The Story", "A full   movie timeline", "What If Naruto Had Every Dojutsu? (Compilation)", "Compilation of all stories"])("includes %s", (title) => expect(isFullMovieTitle(title)).toBe(true));
+  it.each(["Full Movies Ranked", "Part 1 - complete story"])("excludes %s", (title) => expect(isFullMovieTitle(title)).toBe(false));
+});
+
+describe("subcategory filtering", () => {
+  const movie: CatalogMovie = { videoId: "m1", title: "Naruto Story (Full Movie)", description: "", publishedAt: "2026-01-01", durationSeconds: 5000, thumbnails: {}, categories: ["naruto"] };
+  const seriesShow: CatalogShow = {
+    showId: "s1",
+    title: "What If Naruto Left Konoha",
+    description: "",
+    latestPublishedAt: "2026-01-02",
+    thumbnails: {},
+    categories: ["naruto"],
+    seasonNumber: 1,
+    episodes: [
+      { videoId: "e1", title: "Part 1", description: "", publishedAt: "2026-01-01", durationSeconds: 600, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+      { videoId: "e2", title: "Part 2", description: "", publishedAt: "2026-01-02", durationSeconds: 600, thumbnails: {}, episodeNumber: 2, episodeLabel: "Episode 2" },
+    ],
+  };
+  const oneShotShow: CatalogShow = {
+    showId: "s2",
+    title: "What If Sasuke Stayed",
+    description: "",
+    latestPublishedAt: "2026-01-03",
+    thumbnails: {},
+    categories: ["naruto"],
+    seasonNumber: 1,
+    episodes: [
+      { videoId: "e3", title: "One Shot", description: "", publishedAt: "2026-01-03", durationSeconds: 900, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+    ],
+  };
+
+  it("identifies title subcategories correctly", () => {
+    expect(getTitleSubcategory(movie)).toBe("full-movie");
+    expect(getTitleSubcategory(seriesShow)).toBe("series");
+    expect(getTitleSubcategory(oneShotShow)).toBe("one-shot");
+  });
+
+  it("filters titles by subcategory", () => {
+    const titles = [movie, seriesShow, oneShotShow];
+    expect(filterTitlesBySubcategory(titles, "full-movie")).toEqual([movie]);
+    expect(filterTitlesBySubcategory(titles, "series")).toEqual([seriesShow]);
+    expect(filterTitlesBySubcategory(titles, "one-shot")).toEqual([oneShotShow]);
+  });
 });
 
 describe("category classification", () => {
