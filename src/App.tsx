@@ -15,6 +15,7 @@ import { useExtendedExperience } from "./context/ExtendedExperienceContext";
 import { ShowDetails } from "./components/ShowDetails";
 import type { CatalogTitle } from "./types/catalog";
 import { createRecommendationOrder } from "./lib/recommendations";
+import { isExtendedTitle } from "./lib/titles";
 
 export default function App() {
   const state = useCatalog();
@@ -31,8 +32,8 @@ export default function App() {
 
   const allMovies = state.catalog.movies;
   const allShows = state.catalog.shows;
-  const movies = extendedExperience ? allMovies : allMovies.filter((movie) => !movie.isExtended);
-  const shows = extendedExperience ? allShows : allShows.filter((show) => !show.isExtended);
+  const movies = extendedExperience ? allMovies : allMovies.filter((movie) => !isExtendedTitle(movie));
+  const shows = extendedExperience ? allShows : allShows.filter((show) => !isExtendedTitle(show));
   const titles: CatalogTitle[] = [...movies, ...shows];
 
   const recKey = `${state.catalog.generatedAt}:${extendedExperience}`;

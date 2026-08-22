@@ -41,7 +41,7 @@ export const CATEGORY_RULES: CategoryRule[] = [
   { id: "game-of-thrones", label: "Game of Thrones", priority: 130, patterns: [/\bgame of thrones\b/i, /\bjon snow\b/i, /\bdaenerys\b/i, /\bwesteros\b/i] },
   { id: "avengers", label: "Avengers", priority: 135, patterns: [/\bavengers?\b/i, /\bthanos\b/i, /\binfinity stones?\b/i] },
   { id: "dc", label: "DC", priority: 140, patterns: [/\bdc comics\b/i, /\bbatman\b/i, /\bsuperman\b/i, /\bjustice league\b/i, /\bthe joker\b/i] },
-  { id: "star-wars", label: "Star Wars", priority: 150, patterns: [/\bstar wars\b/i, /\bdarth vader\b/i, /\bjedi\b/i, /\bsith\b/i, /\bluke(?:\s+skywalker)?\b/i] },
+  { id: "star-wars", label: "Star Wars", priority: 150, patterns: [/\bstar wars\b/i, /\bdarth\b/i, /\banakin\b/i, /\byoda\b/i, /\bpalpatine\b/i, /\bpadm[eé]\b/i, /\bwindu\b/i, /\bgrievous\b/i, /\b66\b/i, /\bjedi\b/i, /\bsith\b/i, /\bluke(?:\s+skywalker)?\b/i, /\bobi[ -]?wan\b/i, /\bkenobi\b/i, /\bqui[ -]?gon\b/i, /\bleia\b/i, /\bmandalor(?:ian)?\b/i] },
   { id: OTHER_CATEGORY_ID, label: "Uncategorized Full Movies", priority: 1000, patterns: [] },
   { id: OTHER_SHOWS_CATEGORY_ID, label: "Uncategorized Shows", priority: 1010, patterns: [] },
 ];

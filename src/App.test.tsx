@@ -22,20 +22,37 @@ const catalog = {
 };
 const catalogWithShow = {
   ...catalog,
-  showCount: 1,
-  shows: [{
-    showId: "show-naruto-left",
-    title: "What If Naruto Left Konoha",
-    description: "An alternate Naruto timeline.",
-    latestPublishedAt: "2026-02-02T00:00:00Z",
-    thumbnails: { maxres: "https://example.com/newest-show.jpg" },
-    categories: ["naruto"],
-    seasonNumber: 1,
-    episodes: [
-      { videoId: "epNaruto001", title: "What If Naruto Left Konoha Part 1", description: "Sasuke searches for Naruto.", publishedAt: "2026-02-01T00:00:00Z", durationSeconds: 600, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
-      { videoId: "epNaruto002", title: "What If Naruto Left Konoha Final", description: "The final confrontation.", publishedAt: "2026-02-02T00:00:00Z", durationSeconds: 700, thumbnails: {}, episodeNumber: 2, episodeLabel: "Final" },
-    ],
-  }],
+  showCount: 2,
+  shows: [
+    {
+      showId: "show-naruto-left",
+      title: "What If Naruto Left Konoha",
+      description: "An alternate Naruto timeline.",
+      latestPublishedAt: "2026-02-02T00:00:00Z",
+      thumbnails: { maxres: "https://example.com/newest-show.jpg" },
+      categories: ["naruto"],
+      seasonNumber: 1,
+      episodes: [
+        { videoId: "epNaruto001", title: "What If Naruto Left Konoha Part 1", description: "Sasuke searches for Naruto.", publishedAt: "2026-02-01T00:00:00Z", durationSeconds: 600, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+        { videoId: "epNaruto002", title: "What If Naruto Left Konoha Final", description: "The final confrontation.", publishedAt: "2026-02-02T00:00:00Z", durationSeconds: 700, thumbnails: {}, episodeNumber: 2, episodeLabel: "Final" },
+      ],
+    },
+    {
+      showId: "show-vader-anakin-left",
+      title: "What If Anakin Left The Jedi Order",
+      description: "An alternate Star Wars timeline.",
+      latestPublishedAt: "2026-02-03T00:00:00Z",
+      thumbnails: { maxres: "https://example.com/vader-show.jpg" },
+      categories: ["star-wars"],
+      seasonNumber: 1,
+      channelHandle: "@vadersorder",
+      channelName: "Vader's Order",
+      isExtended: true,
+      episodes: [
+        { videoId: "epVader001", title: "What If Anakin Left The Jedi Order Part 1", description: "Anakin leaves.", publishedAt: "2026-02-03T00:00:00Z", durationSeconds: 600, thumbnails: {}, episodeNumber: 1, episodeLabel: "Episode 1" },
+      ],
+    },
+  ],
 };
 
 const renderApp = (entry = "/") => render(<MemoryRouter initialEntries={[entry]}><ExtensionBridgeProvider><HistoryImportProvider><ProfileProvider><ExtendedExperienceProvider><LibraryProvider><App /></LibraryProvider></ExtendedExperienceProvider></ProfileProvider></HistoryImportProvider></ExtensionBridgeProvider></MemoryRouter>);
@@ -183,23 +200,27 @@ describe("App", () => {
   });
 
   it("toggles Extended Experience to display and hide extended channel titles", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalog }));
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => catalogWithShow }));
     const user = userEvent.setup();
     renderApp("/movies");
     
     // By default, Extended Experience is off: only The Amagi content appears
     expect(await screen.findByRole("button", { name: "More information about Naruto Full Movie" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More information about What If Naruto Left Konoha" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "More information about Vader Full Movie" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "More information about What If Anakin Left The Jedi Order" })).not.toBeInTheDocument();
 
     // Toggle on Extended Experience
     const toggle = screen.getByRole("switch", { name: "Toggle Extended Experience" });
     await user.click(toggle);
     expect(screen.getByRole("button", { name: "More information about Vader Full Movie" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More information about What If Anakin Left The Jedi Order" })).toBeInTheDocument();
     expect(localStorage.getItem(EXTENDED_EXPERIENCE_STORAGE_KEY)).toBe("true");
 
     // Toggle off
     await user.click(toggle);
     expect(screen.queryByRole("button", { name: "More information about Vader Full Movie" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "More information about What If Anakin Left The Jedi Order" })).not.toBeInTheDocument();
     expect(localStorage.getItem(EXTENDED_EXPERIENCE_STORAGE_KEY)).toBe("false");
   });
 });

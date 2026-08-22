@@ -108,6 +108,17 @@ describe("category classification", () => {
     ["What If Jonathan Was Adopted By The Brandos?", "jojo"],
     ["What If The Wrong Half Of The Avengers Were Snapped?", "avengers"],
     ["What If Luke Turned To The Dark Side?", "star-wars"],
+    ["What If Anakin Was a Mandalorian?", "star-wars"],
+    ["What If Darth Maul Became the Emperor?", "star-wars"],
+    ["What If Darth Maul SAVED Anakin on Mustafar?", "star-wars"],
+    ["What If Anakin Fought Yoda?", "star-wars"],
+    ["What If Anakin's Force Ghost VISITED Leia?", "star-wars"],
+    ["What If Yoda Trained Leia?", "star-wars"],
+    ["What If Palpatine Was a Jedi?", "star-wars"],
+    ["What If Darth Vader Visited Padme's Tomb?", "star-wars"],
+    ["What If Mace Windu Survived?", "star-wars"],
+    ["What If General Grievous Killed Obi-Wan?", "star-wars"],
+    ["What If the Jedi Learned About Order 66?", "star-wars"],
     ["What If Saitama Were Evil?", "one-punch-man"],
   ])("classifies the deployed show title %s as %s", (title, categoryId) => expect(classifyShow({ title })).toContain(categoryId));
   it("does not expose a Marvel category", () => expect(CATEGORY_RULES.some((rule) => rule.id === "marvel")).toBe(false));

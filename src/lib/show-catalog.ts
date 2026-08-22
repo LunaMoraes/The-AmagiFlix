@@ -12,6 +12,9 @@ export interface ShowVideoCandidate {
   publishedAt: string;
   durationSeconds: number | null;
   thumbnails: CatalogArtwork;
+  channelHandle?: string;
+  channelName?: string;
+  isExtended?: boolean;
 }
 
 export interface ShowCatalogReport {
@@ -135,6 +138,9 @@ export function aggregateShows(candidates: ShowVideoCandidate[], movies: Catalog
     for (let expected = 1; expected < (uniqueNumbers.at(-1) ?? 1); expected += 1) if (!uniqueNumbers.includes(expected)) warnings.push(`${chronological[0].baseTitle}: missing episode ${expected}.`);
     const first = chronological[0];
     const latestPublishedAt = chronological.at(-1)!.candidate.publishedAt;
+    const isExtended = chronological.some((entry) => entry.candidate.isExtended);
+    const channelHandle = first.candidate.channelHandle;
+    const channelName = first.candidate.channelName;
     const show: CatalogShow = {
       showId: stableShowId(identity),
       title: first.baseTitle,
@@ -144,6 +150,9 @@ export function aggregateShows(candidates: ShowVideoCandidate[], movies: Catalog
       categories: resolveShowCategories(identity, `${first.baseTitle} ${episodes.map((episode) => episode.title).join(" ")}`, categoryOverrides),
       seasonNumber: 1,
       episodes,
+      channelHandle,
+      channelName,
+      isExtended,
     };
     return { identity, show };
   });

@@ -96,4 +96,19 @@ describe("show catalog aggregation", () => {
     expect(result.shows.find((show) => show.title.includes("Village"))?.categories).toEqual(["naruto"]);
     expect(result.shows.find((show) => show.title.includes("Anime Worlds"))?.categories).toEqual(["naruto", "one-piece", "dragon-ball"]);
   });
+
+  it("preserves channelHandle, channelName, and isExtended on aggregated shows", () => {
+    const candidate = {
+      ...video("vaderEp01", "What If Anakin Left The Jedi Order Part 1", "2026-01-01T00:00:00Z"),
+      channelHandle: "@vadersorder",
+      channelName: "Vader's Order",
+      isExtended: true,
+    };
+    const result = aggregateShows([candidate], []);
+    expect(result.shows[0]).toMatchObject({
+      channelHandle: "@vadersorder",
+      channelName: "Vader's Order",
+      isExtended: true,
+    });
+  });
 });
