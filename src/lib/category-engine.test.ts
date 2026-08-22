@@ -119,6 +119,7 @@ describe("category classification", () => {
     ["What If Mace Windu Survived?", "star-wars"],
     ["What If General Grievous Killed Obi-Wan?", "star-wars"],
     ["What If the Jedi Learned About Order 66?", "star-wars"],
+    ["What If Ahsoka Never Left The Jedi Order?", "star-wars"],
     ["What If Saitama Were Evil?", "one-punch-man"],
   ])("classifies the deployed show title %s as %s", (title, categoryId) => expect(classifyShow({ title })).toContain(categoryId));
   it("does not expose a Marvel category", () => expect(CATEGORY_RULES.some((rule) => rule.id === "marvel")).toBe(false));
